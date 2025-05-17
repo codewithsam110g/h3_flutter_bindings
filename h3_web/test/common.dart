@@ -2,31 +2,31 @@ import 'package:h3_web/h3_web.dart';
 
 const geoPrecision = 7;
 
-class ComparableGeoCoord {
+class ComparableLatLng {
   final String lat;
-  final String lon;
+  final String lng;
 
-  ComparableGeoCoord.fromLatLon({
+  ComparableLatLng.fromLatLon({
     required double lat,
-    required double lon,
+    required double lng,
   })  : lat = lat.toStringAsPrecision(geoPrecision),
-        lon = lon.toStringAsPrecision(geoPrecision);
+        lng = lng.toStringAsPrecision(geoPrecision);
 
-  ComparableGeoCoord.fromGeoCoord(GeoCoord geoCoord)
-      : this.fromLatLon(lat: geoCoord.lat, lon: geoCoord.lon);
+  ComparableLatLng.fromGeoCoord(LatLng latLng)
+      : this.fromLatLon(lat: latLng.lat, lng: latLng.lng);
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is ComparableGeoCoord && other.lat == lat && other.lon == lon;
+    return other is ComparableLatLng && other.lat == lat && other.lng == lng;
   }
 
   @override
-  int get hashCode => lat.hashCode ^ lon.hashCode;
+  int get hashCode => lat.hashCode ^ lng.hashCode;
 
   @override
-  String toString() => 'ComparableGeoCoord(lat: $lat, lon: $lon)';
+  String toString() => 'ComparableLatLng(lat: $lat, lon: $lng)';
 }
 
 bool almostEqual(num a, num b, [double factor = 1e-6]) =>
