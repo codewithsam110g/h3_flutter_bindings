@@ -17,7 +17,7 @@ import 'package:mockito/mockito.dart' as _i1;
 
 class _FakeBigInt_0 extends _i1.Fake implements BigInt {}
 
-class _FakeGeoCoord_1 extends _i1.Fake implements _i2.GeoCoord {}
+class _FakeLatLng_1 extends _i1.Fake implements _i2.LatLng {}
 
 class _FakeCoordIJ_2 extends _i1.Fake implements _i2.CoordIJ {}
 
@@ -30,66 +30,66 @@ class MockH3 extends _i1.Mock implements _i2.H3 {
   }
 
   @override
-  bool h3IsValid(BigInt? h3Index) =>
+  bool isValidCell(BigInt? h3Index) =>
       (super.noSuchMethod(Invocation.method(#h3IsValid, [h3Index]),
           returnValue: false) as bool);
   @override
-  bool h3IsPentagon(BigInt? h3Index) =>
+  bool isPentagon(BigInt? h3Index) =>
       (super.noSuchMethod(Invocation.method(#h3IsPentagon, [h3Index]),
           returnValue: false) as bool);
   @override
-  bool h3IsResClassIII(BigInt? h3Index) =>
+  bool isResClassIII(BigInt? h3Index) =>
       (super.noSuchMethod(Invocation.method(#h3IsResClassIII, [h3Index]),
           returnValue: false) as bool);
   @override
-  int h3GetBaseCell(BigInt? h3Index) =>
+  int getBaseCellNumber(BigInt? h3Index) =>
       (super.noSuchMethod(Invocation.method(#h3GetBaseCell, [h3Index]),
           returnValue: 0) as int);
   @override
-  List<int> h3GetFaces(BigInt? h3Index) =>
+  List<int> getIcosahedronFaces(BigInt? h3Index) =>
       (super.noSuchMethod(Invocation.method(#h3GetFaces, [h3Index]),
           returnValue: <int>[]) as List<int>);
   @override
-  int h3GetResolution(BigInt? h3Index) =>
+  int getResolution(BigInt? h3Index) =>
       (super.noSuchMethod(Invocation.method(#h3GetResolution, [h3Index]),
           returnValue: 0) as int);
   @override
-  BigInt geoToH3(_i2.GeoCoord? geoCoord, int? res) =>
-      (super.noSuchMethod(Invocation.method(#geoToH3, [geoCoord, res]),
+  BigInt latLngToCell(_i2.LatLng? LatLng, int? res) =>
+      (super.noSuchMethod(Invocation.method(#geoToH3, [LatLng, res]),
           returnValue: _FakeBigInt_0()) as BigInt);
   @override
-  _i2.GeoCoord h3ToGeo(BigInt? h3Index) =>
+  _i2.LatLng cellToLatLng(BigInt? h3Index) =>
       (super.noSuchMethod(Invocation.method(#h3ToGeo, [h3Index]),
-          returnValue: _FakeGeoCoord_1()) as _i2.GeoCoord);
+          returnValue: _FakeLatLng_1()) as _i2.LatLng);
   @override
-  List<_i2.GeoCoord> h3ToGeoBoundary(BigInt? h3Index) =>
+  List<_i2.LatLng> cellToBoundary(BigInt? h3Index) =>
       (super.noSuchMethod(Invocation.method(#h3ToGeoBoundary, [h3Index]),
-          returnValue: <_i2.GeoCoord>[]) as List<_i2.GeoCoord>);
+          returnValue: <_i2.LatLng>[]) as List<_i2.LatLng>);
   @override
-  BigInt h3ToParent(BigInt? h3Index, int? resolution) =>
+  BigInt cellToParent(BigInt? h3Index, int? resolution) =>
       (super.noSuchMethod(Invocation.method(#h3ToParent, [h3Index, resolution]),
           returnValue: _FakeBigInt_0()) as BigInt);
   @override
-  List<BigInt> h3ToChildren(BigInt? h3Index, int? resolution) => (super
+  List<BigInt> cellToChildren(BigInt? h3Index, int? resolution) => (super
       .noSuchMethod(Invocation.method(#h3ToChildren, [h3Index, resolution]),
           returnValue: <BigInt>[]) as List<BigInt>);
   @override
-  BigInt h3ToCenterChild(BigInt? h3Index, int? resolution) => (super
+  BigInt cellToCenterChild(BigInt? h3Index, int? resolution) => (super
       .noSuchMethod(Invocation.method(#h3ToCenterChild, [h3Index, resolution]),
           returnValue: _FakeBigInt_0()) as BigInt);
   @override
-  List<BigInt> kRing(BigInt? h3Index, int? ringSize) =>
+  List<BigInt> gridDisk(BigInt? h3Index, int? ringSize) =>
       (super.noSuchMethod(Invocation.method(#kRing, [h3Index, ringSize]),
           returnValue: <BigInt>[]) as List<BigInt>);
   @override
-  List<BigInt> hexRing(BigInt? h3Index, int? ringSize) =>
+  List<BigInt> gridRingUnsafe(BigInt? h3Index, int? ringSize) =>
       (super.noSuchMethod(Invocation.method(#hexRing, [h3Index, ringSize]),
           returnValue: <BigInt>[]) as List<BigInt>);
   @override
-  List<BigInt> polyfill(
-          {List<_i2.GeoCoord>? coordinates,
+  List<BigInt> polygonToCells(
+          {List<_i2.LatLng>? coordinates,
           int? resolution,
-          List<List<_i2.GeoCoord>>? holes}) =>
+          List<List<_i2.LatLng>>? holes}) =>
       (super.noSuchMethod(
           Invocation.method(#polyfill, [], {
             #coordinates: coordinates,
@@ -98,76 +98,76 @@ class MockH3 extends _i1.Mock implements _i2.H3 {
           }),
           returnValue: <BigInt>[]) as List<BigInt>);
   @override
-  List<BigInt> compact(List<BigInt>? hexagons) =>
+  List<BigInt> compactCells(List<BigInt>? hexagons) =>
       (super.noSuchMethod(Invocation.method(#compact, [hexagons]),
           returnValue: <BigInt>[]) as List<BigInt>);
   @override
-  List<BigInt> uncompact(List<BigInt>? compactedHexagons, {int? resolution}) =>
+  List<BigInt> uncompactCells(List<BigInt>? compactedHexagons, {int? resolution}) =>
       (super.noSuchMethod(
           Invocation.method(
               #uncompact, [compactedHexagons], {#resolution: resolution}),
           returnValue: <BigInt>[]) as List<BigInt>);
   @override
-  bool h3IndexesAreNeighbors(BigInt? origin, BigInt? destination) =>
+  bool areNeighborCells(BigInt? origin, BigInt? destination) =>
       (super.noSuchMethod(
           Invocation.method(#h3IndexesAreNeighbors, [origin, destination]),
           returnValue: false) as bool);
   @override
-  BigInt getH3UnidirectionalEdge(BigInt? origin, BigInt? destination) =>
+  BigInt cellsToDirectedEdge(BigInt? origin, BigInt? destination) =>
       (super.noSuchMethod(
           Invocation.method(#getH3UnidirectionalEdge, [origin, destination]),
           returnValue: _FakeBigInt_0()) as BigInt);
   @override
-  BigInt getOriginH3IndexFromUnidirectionalEdge(BigInt? edgeIndex) =>
+  BigInt getDirectedEdgeOrigin(BigInt? edgeIndex) =>
       (super.noSuchMethod(
           Invocation.method(
               #getOriginH3IndexFromUnidirectionalEdge, [edgeIndex]),
           returnValue: _FakeBigInt_0()) as BigInt);
   @override
-  BigInt getDestinationH3IndexFromUnidirectionalEdge(BigInt? edgeIndex) =>
+  BigInt getDirectedEdgeDestination(BigInt? edgeIndex) =>
       (super.noSuchMethod(
           Invocation.method(
               #getDestinationH3IndexFromUnidirectionalEdge, [edgeIndex]),
           returnValue: _FakeBigInt_0()) as BigInt);
   @override
-  bool h3UnidirectionalEdgeIsValid(BigInt? edgeIndex) => (super.noSuchMethod(
+  bool isValidDirectedEdge(BigInt? edgeIndex) => (super.noSuchMethod(
       Invocation.method(#h3UnidirectionalEdgeIsValid, [edgeIndex]),
       returnValue: false) as bool);
   @override
-  List<BigInt> getH3IndexesFromUnidirectionalEdge(BigInt? edgeIndex) =>
+  List<BigInt> directedEdgeToCells(BigInt? edgeIndex) =>
       (super.noSuchMethod(
           Invocation.method(#getH3IndexesFromUnidirectionalEdge, [edgeIndex]),
           returnValue: <BigInt>[]) as List<BigInt>);
   @override
-  List<BigInt> getH3UnidirectionalEdgesFromHexagon(BigInt? edgeIndex) =>
+  List<BigInt> originToDirectedEdges(BigInt? edgeIndex) =>
       (super.noSuchMethod(
           Invocation.method(#getH3UnidirectionalEdgesFromHexagon, [edgeIndex]),
           returnValue: <BigInt>[]) as List<BigInt>);
   @override
-  List<_i2.GeoCoord> getH3UnidirectionalEdgeBoundary(BigInt? edgeIndex) =>
+  List<_i2.LatLng> directedEdgeToBoundary(BigInt? edgeIndex) =>
       (super.noSuchMethod(
           Invocation.method(#getH3UnidirectionalEdgeBoundary, [edgeIndex]),
-          returnValue: <_i2.GeoCoord>[]) as List<_i2.GeoCoord>);
+          returnValue: <_i2.LatLng>[]) as List<_i2.LatLng>);
   @override
-  int h3Distance(BigInt? origin, BigInt? destination) =>
+  int gridDistance(BigInt? origin, BigInt? destination) =>
       (super.noSuchMethod(Invocation.method(#h3Distance, [origin, destination]),
           returnValue: 0) as int);
   @override
-  List<BigInt> h3Line(BigInt? origin, BigInt? destination) =>
+  List<BigInt> gridPathCells(BigInt? origin, BigInt? destination) =>
       (super.noSuchMethod(Invocation.method(#h3Line, [origin, destination]),
           returnValue: <BigInt>[]) as List<BigInt>);
   @override
-  _i2.CoordIJ experimentalH3ToLocalIj(BigInt? origin, BigInt? destination) =>
+  _i2.CoordIJ cellToLocalIj(BigInt? origin, BigInt? destination) =>
       (super.noSuchMethod(
           Invocation.method(#experimentalH3ToLocalIj, [origin, destination]),
           returnValue: _FakeCoordIJ_2()) as _i2.CoordIJ);
   @override
-  BigInt experimentalLocalIjToH3(BigInt? origin, _i2.CoordIJ? coordinates) =>
+  BigInt localIjToCell(BigInt? origin, _i2.CoordIJ? coordinates) =>
       (super.noSuchMethod(
           Invocation.method(#experimentalLocalIjToH3, [origin, coordinates]),
           returnValue: _FakeBigInt_0()) as BigInt);
   @override
-  double pointDist(_i2.GeoCoord? a, _i2.GeoCoord? b, _i2.H3Units? unit) =>
+  double greatCircleDistance(_i2.LatLng? a, _i2.LatLng? b, _i2.H3Units? unit) =>
       (super.noSuchMethod(Invocation.method(#pointDist, [a, b, unit]),
           returnValue: 0.0) as double);
   @override
@@ -175,27 +175,27 @@ class MockH3 extends _i1.Mock implements _i2.H3 {
       (super.noSuchMethod(Invocation.method(#cellArea, [h3Index, unit]),
           returnValue: 0.0) as double);
   @override
-  double exactEdgeLength(BigInt? edgeIndex, _i2.H3Units? unit) => (super
+  double edgeLength(BigInt? edgeIndex, _i2.H3Units? unit) => (super
       .noSuchMethod(Invocation.method(#exactEdgeLength, [edgeIndex, unit]),
           returnValue: 0.0) as double);
   @override
-  double hexArea(int? res, _i2.H3AreaUnits? unit) =>
+  double getHexagonAreaAvg(int? res, _i2.H3AreaUnits? unit) =>
       (super.noSuchMethod(Invocation.method(#hexArea, [res, unit]),
           returnValue: 0.0) as double);
   @override
-  double edgeLength(int? res, _i2.H3EdgeLengthUnits? unit) =>
+  double getHexagonEdgeLengthAvg(int? res, _i2.H3EdgeLengthUnits? unit) =>
       (super.noSuchMethod(Invocation.method(#edgeLength, [res, unit]),
           returnValue: 0.0) as double);
   @override
-  int numHexagons(int? res) => (super
+  int getNumCells(int? res) => (super
           .noSuchMethod(Invocation.method(#numHexagons, [res]), returnValue: 0)
       as int);
   @override
-  List<BigInt> getRes0Indexes() =>
+  List<BigInt> getRes0Cells() =>
       (super.noSuchMethod(Invocation.method(#getRes0Indexes, []),
           returnValue: <BigInt>[]) as List<BigInt>);
   @override
-  List<BigInt> getPentagonIndexes(int? res) =>
+  List<BigInt> getPentagons(int? res) =>
       (super.noSuchMethod(Invocation.method(#getPentagonIndexes, [res]),
           returnValue: <BigInt>[]) as List<BigInt>);
   @override

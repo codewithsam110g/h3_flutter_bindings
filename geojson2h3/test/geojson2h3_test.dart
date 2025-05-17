@@ -11,52 +11,52 @@ void main() {
   final h3 = MockH3();
   final geojson2H3 = Geojson2H3(h3);
 
-  when(h3.h3ToGeoBoundary(BigInt.from(0x89283082837ffff))).thenAnswer(
+  when(h3.cellToBoundary(BigInt.from(0x89283082837ffff))).thenAnswer(
     (_) => [
-      GeoCoord(lon: -122.42778275313196, lat: 37.77598951883772),
-      GeoCoord(lon: -122.42671162907995, lat: 37.77767221484916),
-      GeoCoord(lon: -122.42797132395157, lat: 37.7791765946462),
-      GeoCoord(lon: -122.43030214180568, lat: 37.778998255103545),
-      GeoCoord(lon: -122.4313731964829, lat: 37.77731555898802),
-      GeoCoord(lon: -122.43011350268341, lat: 37.77581120251895),
+      LatLng(lng: -122.42778275313196, lat: 37.77598951883772),
+      LatLng(lng: -122.42671162907995, lat: 37.77767221484916),
+      LatLng(lng: -122.42797132395157, lat: 37.7791765946462),
+      LatLng(lng: -122.43030214180568, lat: 37.778998255103545),
+      LatLng(lng: -122.4313731964829, lat: 37.77731555898802),
+      LatLng(lng: -122.43011350268341, lat: 37.77581120251895),
     ],
   );
-  when(h3.h3ToGeoBoundary(BigInt.from(0x89283085507ffff))).thenAnswer(
+  when(h3.cellToBoundary(BigInt.from(0x89283085507ffff))).thenAnswer(
     (_) => [
-      GeoCoord(lon: -122.4748582327671, lat: 37.85878356045377),
-      GeoCoord(lon: -122.47378734444061, lat: 37.86046562198416),
-      GeoCoord(lon: -122.47504834087832, lat: 37.86196795698973),
-      GeoCoord(lon: -122.4773802244202, lat: 37.86178820718911),
-      GeoCoord(lon: -122.47845104316994, lat: 37.860106145633125),
-      GeoCoord(lon: -122.47719004795714, lat: 37.85860383390306),
-    ],
-  );
-
-  when(h3.h3ToGeoBoundary(BigInt.from(0x892830855b3ffff))).thenAnswer(
-    (_) => [
-      GeoCoord(lon: -122.48147295617734, lat: 37.85187534491365),
-      GeoCoord(lon: -122.48040229236013, lat: 37.85355749750207),
-      GeoCoord(lon: -122.48166324644576, lat: 37.85505983954852),
-      GeoCoord(lon: -122.4839948631053, lat: 37.85488000572599),
-      GeoCoord(lon: -122.48506545734226, lat: 37.853197853121515),
-      GeoCoord(lon: -122.48380450450256, lat: 37.851695534355315),
+      LatLng(lng: -122.4748582327671, lat: 37.85878356045377),
+      LatLng(lng: -122.47378734444061, lat: 37.86046562198416),
+      LatLng(lng: -122.47504834087832, lat: 37.86196795698973),
+      LatLng(lng: -122.4773802244202, lat: 37.86178820718911),
+      LatLng(lng: -122.47845104316994, lat: 37.860106145633125),
+      LatLng(lng: -122.47719004795714, lat: 37.85860383390306),
     ],
   );
 
-  when(h3.h3ToGeoBoundary(BigInt.from(0x85283473fffffff))).thenAnswer(
+  when(h3.cellToBoundary(BigInt.from(0x892830855b3ffff))).thenAnswer(
     (_) => [
-      GeoCoord(lon: -121.91508032705622, lat: 37.27135586673191),
-      GeoCoord(lon: -121.86222328902491, lat: 37.353926450852256),
-      GeoCoord(lon: -121.92354999630156, lat: 37.42834118609434),
-      GeoCoord(lon: -122.03773496427027, lat: 37.42012867767778),
-      GeoCoord(lon: -122.09042892904397, lat: 37.33755608435298),
-      GeoCoord(lon: -122.02910130918998, lat: 37.26319797461824),
+      LatLng(lng: -122.48147295617734, lat: 37.85187534491365),
+      LatLng(lng: -122.48040229236013, lat: 37.85355749750207),
+      LatLng(lng: -122.48166324644576, lat: 37.85505983954852),
+      LatLng(lng: -122.4839948631053, lat: 37.85488000572599),
+      LatLng(lng: -122.48506545734226, lat: 37.853197853121515),
+      LatLng(lng: -122.48380450450256, lat: 37.851695534355315),
+    ],
+  );
+
+  when(h3.cellToBoundary(BigInt.from(0x85283473fffffff))).thenAnswer(
+    (_) => [
+      LatLng(lng: -121.91508032705622, lat: 37.27135586673191),
+      LatLng(lng: -121.86222328902491, lat: 37.353926450852256),
+      LatLng(lng: -121.92354999630156, lat: 37.42834118609434),
+      LatLng(lng: -122.03773496427027, lat: 37.42012867767778),
+      LatLng(lng: -122.09042892904397, lat: 37.33755608435298),
+      LatLng(lng: -122.02910130918998, lat: 37.26319797461824),
     ],
   );
 
   test('h3ToFeature', () async {
     final hexagon = BigInt.from(0x89283082837ffff);
-    final coordinates = h3.h3ToGeoBoundary(hexagon);
+    final coordinates = h3.cellToBoundary(hexagon);
     coordinates.add(coordinates.first); // close loop
     final feature = {
       'id': hexagon.toString(),
@@ -67,7 +67,7 @@ void main() {
         'coordinates': [
           [
             for (final coordinate in coordinates)
-              [coordinate.lon, coordinate.lat]
+              [coordinate.lng, coordinate.lat]
           ],
         ],
       }
