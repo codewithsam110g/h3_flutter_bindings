@@ -18,94 +18,102 @@ class H3C {
           lookup)
       : _lookup = lookup;
 
-  int geoToH3(
-    ffi.Pointer<GeoCoord> g,
+  /// @defgroup latLngToCell latLngToCell
+  /// Functions for latLngToCell
+  /// @{
+  /// /
+  /// /** @brief find the H3 index of the resolution res cell containing the lat/lng
+  int latLngToCell(
+    ffi.Pointer<LatLng> g,
     int res,
+    ffi.Pointer<H3Index> out,
   ) {
-    return _geoToH3(
+    return _latLngToCell(
       g,
       res,
+      out,
     );
   }
 
-  late final _geoToH3Ptr = _lookup<
+  late final _latLngToCellPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(ffi.Pointer<GeoCoord>, ffi.Int32)>>('geoToH3');
-  late final _geoToH3 =
-      _geoToH3Ptr.asFunction<int Function(ffi.Pointer<GeoCoord>, int)>();
+          H3Error Function(ffi.Pointer<LatLng>, ffi.Int,
+              ffi.Pointer<H3Index>)>>('latLngToCell');
+  late final _latLngToCell = _latLngToCellPtr.asFunction<
+      int Function(ffi.Pointer<LatLng>, int, ffi.Pointer<H3Index>)>();
 
-  void h3ToGeo(
+  /// @defgroup cellToLatLng cellToLatLng
+  /// Functions for cellToLatLng
+  /// @{
+  /// /
+  /// /** @brief find the lat/lng center point g of the cell h3
+  int cellToLatLng(
     int h3,
-    ffi.Pointer<GeoCoord> g,
+    ffi.Pointer<LatLng> g,
   ) {
-    return _h3ToGeo(
+    return _cellToLatLng(
       h3,
       g,
     );
   }
 
-  late final _h3ToGeoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Uint64, ffi.Pointer<GeoCoord>)>>('h3ToGeo');
-  late final _h3ToGeo =
-      _h3ToGeoPtr.asFunction<void Function(int, ffi.Pointer<GeoCoord>)>();
+  late final _cellToLatLngPtr = _lookup<
+          ffi.NativeFunction<H3Error Function(H3Index, ffi.Pointer<LatLng>)>>(
+      'cellToLatLng');
+  late final _cellToLatLng =
+      _cellToLatLngPtr.asFunction<int Function(int, ffi.Pointer<LatLng>)>();
 
-  void h3ToGeoBoundary(
+  /// @defgroup cellToBoundary cellToBoundary
+  /// Functions for cellToBoundary
+  /// @{
+  /// /
+  /// /** @brief give the cell boundary in lat/lng coordinates for the cell h3
+  int cellToBoundary(
     int h3,
-    ffi.Pointer<GeoBoundary> gp,
+    ffi.Pointer<CellBoundary> gp,
   ) {
-    return _h3ToGeoBoundary(
+    return _cellToBoundary(
       h3,
       gp,
     );
   }
 
-  late final _h3ToGeoBoundaryPtr = _lookup<
+  late final _cellToBoundaryPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Uint64, ffi.Pointer<GeoBoundary>)>>('h3ToGeoBoundary');
-  late final _h3ToGeoBoundary = _h3ToGeoBoundaryPtr
-      .asFunction<void Function(int, ffi.Pointer<GeoBoundary>)>();
+          H3Error Function(
+              H3Index, ffi.Pointer<CellBoundary>)>>('cellToBoundary');
+  late final _cellToBoundary = _cellToBoundaryPtr
+      .asFunction<int Function(int, ffi.Pointer<CellBoundary>)>();
 
-  int maxKringSize(
-    int k,
-  ) {
-    return _maxKringSize(
-      k,
-    );
-  }
-
-  late final _maxKringSizePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Int32)>>(
-          'maxKringSize');
-  late final _maxKringSize = _maxKringSizePtr.asFunction<int Function(int)>();
-
-  int hexRange(
+  /// @brief hexagons neighbors in all directions, assuming no pentagons
+  int gridDiskUnsafe(
     int origin,
     int k,
-    ffi.Pointer<ffi.Uint64> out,
+    ffi.Pointer<H3Index> out,
   ) {
-    return _hexRange(
+    return _gridDiskUnsafe(
       origin,
       k,
       out,
     );
   }
 
-  late final _hexRangePtr = _lookup<
+  late final _gridDiskUnsafePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Uint64, ffi.Int32, ffi.Pointer<ffi.Uint64>)>>('hexRange');
-  late final _hexRange = _hexRangePtr
-      .asFunction<int Function(int, int, ffi.Pointer<ffi.Uint64>)>();
+          H3Error Function(
+              H3Index, ffi.Int, ffi.Pointer<H3Index>)>>('gridDiskUnsafe');
+  late final _gridDiskUnsafe = _gridDiskUnsafePtr
+      .asFunction<int Function(int, int, ffi.Pointer<H3Index>)>();
 
-  int hexRangeDistances(
+  /// @brief hexagons neighbors in all directions, assuming no pentagons,
+  /// reporting distance from origin
+  int gridDiskDistancesUnsafe(
     int origin,
     int k,
-    ffi.Pointer<ffi.Uint64> out,
-    ffi.Pointer<ffi.Int32> distances,
+    ffi.Pointer<H3Index> out,
+    ffi.Pointer<ffi.Int> distances,
   ) {
-    return _hexRangeDistances(
+    return _gridDiskDistancesUnsafe(
       origin,
       k,
       out,
@@ -113,21 +121,21 @@ class H3C {
     );
   }
 
-  late final _hexRangeDistancesPtr = _lookup<
+  late final _gridDiskDistancesUnsafePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Uint64, ffi.Int32, ffi.Pointer<ffi.Uint64>,
-              ffi.Pointer<ffi.Int32>)>>('hexRangeDistances');
-  late final _hexRangeDistances = _hexRangeDistancesPtr.asFunction<
-      int Function(
-          int, int, ffi.Pointer<ffi.Uint64>, ffi.Pointer<ffi.Int32>)>();
+          H3Error Function(H3Index, ffi.Int, ffi.Pointer<H3Index>,
+              ffi.Pointer<ffi.Int>)>>('gridDiskDistancesUnsafe');
+  late final _gridDiskDistancesUnsafe = _gridDiskDistancesUnsafePtr.asFunction<
+      int Function(int, int, ffi.Pointer<H3Index>, ffi.Pointer<ffi.Int>)>();
 
-  int hexRanges(
-    ffi.Pointer<ffi.Uint64> h3Set,
+  /// @brief collection of hex rings sorted by ring for all given hexagons
+  int gridDisksUnsafe(
+    ffi.Pointer<H3Index> h3Set,
     int length,
     int k,
-    ffi.Pointer<ffi.Uint64> out,
+    ffi.Pointer<H3Index> out,
   ) {
-    return _hexRanges(
+    return _gridDisksUnsafe(
       h3Set,
       length,
       k,
@@ -135,40 +143,45 @@ class H3C {
     );
   }
 
-  late final _hexRangesPtr = _lookup<
+  late final _gridDisksUnsafePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Uint64>, ffi.Int32, ffi.Int32,
-              ffi.Pointer<ffi.Uint64>)>>('hexRanges');
-  late final _hexRanges = _hexRangesPtr.asFunction<
-      int Function(
-          ffi.Pointer<ffi.Uint64>, int, int, ffi.Pointer<ffi.Uint64>)>();
+          H3Error Function(ffi.Pointer<H3Index>, ffi.Int, ffi.Int,
+              ffi.Pointer<H3Index>)>>('gridDisksUnsafe');
+  late final _gridDisksUnsafe = _gridDisksUnsafePtr.asFunction<
+      int Function(ffi.Pointer<H3Index>, int, int, ffi.Pointer<H3Index>)>();
 
-  void kRing(
+  /// @brief hexagon neighbors in all directions
+  int gridDisk(
     int origin,
     int k,
-    ffi.Pointer<ffi.Uint64> out,
+    ffi.Pointer<H3Index> out,
   ) {
-    return _kRing(
+    return _gridDisk(
       origin,
       k,
       out,
     );
   }
 
-  late final _kRingPtr = _lookup<
+  late final _gridDiskPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Uint64, ffi.Int32, ffi.Pointer<ffi.Uint64>)>>('kRing');
-  late final _kRing =
-      _kRingPtr.asFunction<void Function(int, int, ffi.Pointer<ffi.Uint64>)>();
+          H3Error Function(
+              H3Index, ffi.Int, ffi.Pointer<H3Index>)>>('gridDisk');
+  late final _gridDisk =
+      _gridDiskPtr.asFunction<int Function(int, int, ffi.Pointer<H3Index>)>();
 
-  void kRingDistances(
+  /// @defgroup gridDiskDistances gridDiskDistances
+  /// Functions for gridDiskDistances
+  /// @{
+  /// /
+  /// /** @brief hexagon neighbors in all directions, reporting distance from origin
+  int gridDiskDistances(
     int origin,
     int k,
-    ffi.Pointer<ffi.Uint64> out,
-    ffi.Pointer<ffi.Int32> distances,
+    ffi.Pointer<H3Index> out,
+    ffi.Pointer<ffi.Int> distances,
   ) {
-    return _kRingDistances(
+    return _gridDiskDistances(
       origin,
       k,
       out,
@@ -176,103 +189,90 @@ class H3C {
     );
   }
 
-  late final _kRingDistancesPtr = _lookup<
+  late final _gridDiskDistancesPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Uint64, ffi.Int32, ffi.Pointer<ffi.Uint64>,
-              ffi.Pointer<ffi.Int32>)>>('kRingDistances');
-  late final _kRingDistances = _kRingDistancesPtr.asFunction<
-      void Function(
-          int, int, ffi.Pointer<ffi.Uint64>, ffi.Pointer<ffi.Int32>)>();
+          H3Error Function(H3Index, ffi.Int, ffi.Pointer<H3Index>,
+              ffi.Pointer<ffi.Int>)>>('gridDiskDistances');
+  late final _gridDiskDistances = _gridDiskDistancesPtr.asFunction<
+      int Function(int, int, ffi.Pointer<H3Index>, ffi.Pointer<ffi.Int>)>();
 
-  int hexRing(
+  /// @defgroup gridRingUnsafe gridRingUnsafe
+  /// Functions for gridRingUnsafe
+  /// @{
+  /// /
+  /// /** @brief hollow hexagon ring at some origin
+  int gridRingUnsafe(
     int origin,
     int k,
-    ffi.Pointer<ffi.Uint64> out,
+    ffi.Pointer<H3Index> out,
   ) {
-    return _hexRing(
+    return _gridRingUnsafe(
       origin,
       k,
       out,
     );
   }
 
-  late final _hexRingPtr = _lookup<
+  late final _gridRingUnsafePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Uint64, ffi.Int32, ffi.Pointer<ffi.Uint64>)>>('hexRing');
-  late final _hexRing =
-      _hexRingPtr.asFunction<int Function(int, int, ffi.Pointer<ffi.Uint64>)>();
+          H3Error Function(
+              H3Index, ffi.Int, ffi.Pointer<H3Index>)>>('gridRingUnsafe');
+  late final _gridRingUnsafe = _gridRingUnsafePtr
+      .asFunction<int Function(int, int, ffi.Pointer<H3Index>)>();
 
-  int maxPolyfillSize(
+  /// @brief cells within the given polygon
+  int polygonToCells(
     ffi.Pointer<GeoPolygon> geoPolygon,
     int res,
+    int flags,
+    ffi.Pointer<H3Index> out,
   ) {
-    return _maxPolyfillSize(
+    return _polygonToCells(
       geoPolygon,
       res,
-    );
-  }
-
-  late final _maxPolyfillSizePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<GeoPolygon>, ffi.Int32)>>('maxPolyfillSize');
-  late final _maxPolyfillSize = _maxPolyfillSizePtr
-      .asFunction<int Function(ffi.Pointer<GeoPolygon>, int)>();
-
-  void polyfill(
-    ffi.Pointer<GeoPolygon> geoPolygon,
-    int res,
-    ffi.Pointer<ffi.Uint64> out,
-  ) {
-    return _polyfill(
-      geoPolygon,
-      res,
+      flags,
       out,
     );
   }
 
-  late final _polyfillPtr = _lookup<
+  late final _polygonToCellsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<GeoPolygon>, ffi.Int32,
-              ffi.Pointer<ffi.Uint64>)>>('polyfill');
-  late final _polyfill = _polyfillPtr.asFunction<
-      void Function(ffi.Pointer<GeoPolygon>, int, ffi.Pointer<ffi.Uint64>)>();
+          H3Error Function(ffi.Pointer<GeoPolygon>, ffi.Int, ffi.Uint32,
+              ffi.Pointer<H3Index>)>>('polygonToCells');
+  late final _polygonToCells = _polygonToCellsPtr.asFunction<
+      int Function(ffi.Pointer<GeoPolygon>, int, int, ffi.Pointer<H3Index>)>();
 
-  void h3SetToLinkedGeo(
-    ffi.Pointer<ffi.Uint64> h3Set,
+  /// @defgroup cellsToMultiPolygon cellsToMultiPolygon
+  /// Functions for cellsToMultiPolygon (currently a binding-only concept)
+  /// @{
+  /// /
+  /// /** @brief Create a LinkedGeoPolygon from a set of contiguous hexagons
+  int cellsToLinkedMultiPolygon(
+    ffi.Pointer<H3Index> h3Set,
     int numHexes,
     ffi.Pointer<LinkedGeoPolygon> out,
   ) {
-    return _h3SetToLinkedGeo(
+    return _cellsToLinkedMultiPolygon(
       h3Set,
       numHexes,
       out,
     );
   }
 
-  late final _h3SetToLinkedGeoPtr = _lookup<
+  late final _cellsToLinkedMultiPolygonPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Uint64>, ffi.Int32,
-              ffi.Pointer<LinkedGeoPolygon>)>>('h3SetToLinkedGeo');
-  late final _h3SetToLinkedGeo = _h3SetToLinkedGeoPtr.asFunction<
-      void Function(
-          ffi.Pointer<ffi.Uint64>, int, ffi.Pointer<LinkedGeoPolygon>)>();
+          H3Error Function(ffi.Pointer<H3Index>, ffi.Int,
+              ffi.Pointer<LinkedGeoPolygon>)>>('cellsToLinkedMultiPolygon');
+  late final _cellsToLinkedMultiPolygon =
+      _cellsToLinkedMultiPolygonPtr.asFunction<
+          int Function(
+              ffi.Pointer<H3Index>, int, ffi.Pointer<LinkedGeoPolygon>)>();
 
-  void destroyLinkedPolygon(
-    ffi.Pointer<LinkedGeoPolygon> polygon,
-  ) {
-    return _destroyLinkedPolygon(
-      polygon,
-    );
-  }
-
-  late final _destroyLinkedPolygonPtr = _lookup<
-          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<LinkedGeoPolygon>)>>(
-      'destroyLinkedPolygon');
-  late final _destroyLinkedPolygon = _destroyLinkedPolygonPtr
-      .asFunction<void Function(ffi.Pointer<LinkedGeoPolygon>)>();
-
+  /// @defgroup degsToRads degsToRads
+  /// Functions for degsToRads
+  /// @{
+  /// /
+  /// /** @brief converts degrees to radians
   double degsToRads(
     double degrees,
   ) {
@@ -286,6 +286,11 @@ class H3C {
           'degsToRads');
   late final _degsToRads = _degsToRadsPtr.asFunction<double Function(double)>();
 
+  /// @defgroup radsToDegs radsToDegs
+  /// Functions for radsToDegs
+  /// @{
+  /// /
+  /// /** @brief converts radians to degrees
   double radsToDegs(
     double radians,
   ) {
@@ -299,294 +304,419 @@ class H3C {
           'radsToDegs');
   late final _radsToDegs = _radsToDegsPtr.asFunction<double Function(double)>();
 
-  double pointDistRads(
-    ffi.Pointer<GeoCoord> a,
-    ffi.Pointer<GeoCoord> b,
+  /// @defgroup greatCircleDistance greatCircleDistance
+  /// Functions for distance
+  /// @{
+  /// /
+  /// /** @brief "great circle distance" between pairs of LatLng points in radians
+  double greatCircleDistanceRads(
+    ffi.Pointer<LatLng> a,
+    ffi.Pointer<LatLng> b,
   ) {
-    return _pointDistRads(
+    return _greatCircleDistanceRads(
       a,
       b,
     );
   }
 
-  late final _pointDistRadsPtr = _lookup<
+  late final _greatCircleDistanceRadsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Double Function(
-              ffi.Pointer<GeoCoord>, ffi.Pointer<GeoCoord>)>>('pointDistRads');
-  late final _pointDistRads = _pointDistRadsPtr.asFunction<
-      double Function(ffi.Pointer<GeoCoord>, ffi.Pointer<GeoCoord>)>();
+          ffi.Double Function(ffi.Pointer<LatLng>,
+              ffi.Pointer<LatLng>)>>('greatCircleDistanceRads');
+  late final _greatCircleDistanceRads = _greatCircleDistanceRadsPtr
+      .asFunction<double Function(ffi.Pointer<LatLng>, ffi.Pointer<LatLng>)>();
 
-  double pointDistKm(
-    ffi.Pointer<GeoCoord> a,
-    ffi.Pointer<GeoCoord> b,
+  /// @brief "great circle distance" between pairs of LatLng points in
+  /// kilometers
+  double greatCircleDistanceKm(
+    ffi.Pointer<LatLng> a,
+    ffi.Pointer<LatLng> b,
   ) {
-    return _pointDistKm(
+    return _greatCircleDistanceKm(
       a,
       b,
     );
   }
 
-  late final _pointDistKmPtr = _lookup<
+  late final _greatCircleDistanceKmPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Double Function(
-              ffi.Pointer<GeoCoord>, ffi.Pointer<GeoCoord>)>>('pointDistKm');
-  late final _pointDistKm = _pointDistKmPtr.asFunction<
-      double Function(ffi.Pointer<GeoCoord>, ffi.Pointer<GeoCoord>)>();
+          ffi.Double Function(ffi.Pointer<LatLng>,
+              ffi.Pointer<LatLng>)>>('greatCircleDistanceKm');
+  late final _greatCircleDistanceKm = _greatCircleDistanceKmPtr
+      .asFunction<double Function(ffi.Pointer<LatLng>, ffi.Pointer<LatLng>)>();
 
-  double pointDistM(
-    ffi.Pointer<GeoCoord> a,
-    ffi.Pointer<GeoCoord> b,
+  /// @brief "great circle distance" between pairs of LatLng points in meters
+  double greatCircleDistanceM(
+    ffi.Pointer<LatLng> a,
+    ffi.Pointer<LatLng> b,
   ) {
-    return _pointDistM(
+    return _greatCircleDistanceM(
       a,
       b,
     );
   }
 
-  late final _pointDistMPtr = _lookup<
+  late final _greatCircleDistanceMPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Double Function(
-              ffi.Pointer<GeoCoord>, ffi.Pointer<GeoCoord>)>>('pointDistM');
-  late final _pointDistM = _pointDistMPtr.asFunction<
-      double Function(ffi.Pointer<GeoCoord>, ffi.Pointer<GeoCoord>)>();
+          ffi.Double Function(ffi.Pointer<LatLng>,
+              ffi.Pointer<LatLng>)>>('greatCircleDistanceM');
+  late final _greatCircleDistanceM = _greatCircleDistanceMPtr
+      .asFunction<double Function(ffi.Pointer<LatLng>, ffi.Pointer<LatLng>)>();
 
-  double hexAreaKm2(
+  /// @defgroup getHexagonAreaAvg getHexagonAreaAvg
+  /// Functions for getHexagonAreaAvg
+  /// @{
+  /// /
+  /// /** @brief average hexagon area in square kilometers (excludes pentagons)
+  int getHexagonAreaAvgKm2(
     int res,
+    ffi.Pointer<ffi.Double> out,
   ) {
-    return _hexAreaKm2(
+    return _getHexagonAreaAvgKm2(
       res,
+      out,
     );
   }
 
-  late final _hexAreaKm2Ptr =
-      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Int32)>>('hexAreaKm2');
-  late final _hexAreaKm2 = _hexAreaKm2Ptr.asFunction<double Function(int)>();
+  late final _getHexagonAreaAvgKm2Ptr = _lookup<
+          ffi
+          .NativeFunction<H3Error Function(ffi.Int, ffi.Pointer<ffi.Double>)>>(
+      'getHexagonAreaAvgKm2');
+  late final _getHexagonAreaAvgKm2 = _getHexagonAreaAvgKm2Ptr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Double>)>();
 
-  double hexAreaM2(
+  /// @brief average hexagon area in square meters (excludes pentagons)
+  int getHexagonAreaAvgM2(
     int res,
+    ffi.Pointer<ffi.Double> out,
   ) {
-    return _hexAreaM2(
+    return _getHexagonAreaAvgM2(
       res,
+      out,
     );
   }
 
-  late final _hexAreaM2Ptr =
-      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Int32)>>('hexAreaM2');
-  late final _hexAreaM2 = _hexAreaM2Ptr.asFunction<double Function(int)>();
+  late final _getHexagonAreaAvgM2Ptr = _lookup<
+          ffi
+          .NativeFunction<H3Error Function(ffi.Int, ffi.Pointer<ffi.Double>)>>(
+      'getHexagonAreaAvgM2');
+  late final _getHexagonAreaAvgM2 = _getHexagonAreaAvgM2Ptr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Double>)>();
 
-  double cellAreaRads2(
+  /// @defgroup cellArea cellArea
+  /// Functions for cellArea
+  /// @{
+  /// /
+  /// /** @brief exact area for a specific cell (hexagon or pentagon) in radians^2
+  int cellAreaRads2(
     int h,
+    ffi.Pointer<ffi.Double> out,
   ) {
     return _cellAreaRads2(
       h,
+      out,
     );
   }
 
-  late final _cellAreaRads2Ptr =
-      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Uint64)>>(
-          'cellAreaRads2');
-  late final _cellAreaRads2 =
-      _cellAreaRads2Ptr.asFunction<double Function(int)>();
+  late final _cellAreaRads2Ptr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(H3Index, ffi.Pointer<ffi.Double>)>>('cellAreaRads2');
+  late final _cellAreaRads2 = _cellAreaRads2Ptr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Double>)>();
 
-  double cellAreaKm2(
+  /// @brief exact area for a specific cell (hexagon or pentagon) in kilometers^2
+  int cellAreaKm2(
     int h,
+    ffi.Pointer<ffi.Double> out,
   ) {
     return _cellAreaKm2(
       h,
+      out,
     );
   }
 
-  late final _cellAreaKm2Ptr =
-      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Uint64)>>(
-          'cellAreaKm2');
-  late final _cellAreaKm2 = _cellAreaKm2Ptr.asFunction<double Function(int)>();
+  late final _cellAreaKm2Ptr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(H3Index, ffi.Pointer<ffi.Double>)>>('cellAreaKm2');
+  late final _cellAreaKm2 =
+      _cellAreaKm2Ptr.asFunction<int Function(int, ffi.Pointer<ffi.Double>)>();
 
-  double cellAreaM2(
+  /// @brief exact area for a specific cell (hexagon or pentagon) in meters^2
+  int cellAreaM2(
     int h,
+    ffi.Pointer<ffi.Double> out,
   ) {
     return _cellAreaM2(
       h,
+      out,
     );
   }
 
-  late final _cellAreaM2Ptr =
-      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Uint64)>>(
-          'cellAreaM2');
-  late final _cellAreaM2 = _cellAreaM2Ptr.asFunction<double Function(int)>();
+  late final _cellAreaM2Ptr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(H3Index, ffi.Pointer<ffi.Double>)>>('cellAreaM2');
+  late final _cellAreaM2 =
+      _cellAreaM2Ptr.asFunction<int Function(int, ffi.Pointer<ffi.Double>)>();
 
-  double edgeLengthKm(
+  /// @defgroup getHexagonEdgeLengthAvg getHexagonEdgeLengthAvg
+  /// Functions for getHexagonEdgeLengthAvg
+  /// @{
+  /// /
+  /// /** @brief average hexagon edge length in kilometers (excludes pentagons)
+  int getHexagonEdgeLengthAvgKm(
     int res,
+    ffi.Pointer<ffi.Double> out,
+  ) {
+    return _getHexagonEdgeLengthAvgKm(
+      res,
+      out,
+    );
+  }
+
+  late final _getHexagonEdgeLengthAvgKmPtr = _lookup<
+          ffi
+          .NativeFunction<H3Error Function(ffi.Int, ffi.Pointer<ffi.Double>)>>(
+      'getHexagonEdgeLengthAvgKm');
+  late final _getHexagonEdgeLengthAvgKm = _getHexagonEdgeLengthAvgKmPtr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Double>)>();
+
+  /// @brief average hexagon edge length in meters (excludes pentagons)
+  int getHexagonEdgeLengthAvgM(
+    int res,
+    ffi.Pointer<ffi.Double> out,
+  ) {
+    return _getHexagonEdgeLengthAvgM(
+      res,
+      out,
+    );
+  }
+
+  late final _getHexagonEdgeLengthAvgMPtr = _lookup<
+          ffi
+          .NativeFunction<H3Error Function(ffi.Int, ffi.Pointer<ffi.Double>)>>(
+      'getHexagonEdgeLengthAvgM');
+  late final _getHexagonEdgeLengthAvgM = _getHexagonEdgeLengthAvgMPtr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Double>)>();
+
+  /// @defgroup edgeLength edgeLength
+  /// Functions for edgeLength
+  /// @{
+  /// /
+  /// /** @brief exact length for a specific directed edge in radians
+  int edgeLengthRads(
+    int edge,
+    ffi.Pointer<ffi.Double> length,
+  ) {
+    return _edgeLengthRads(
+      edge,
+      length,
+    );
+  }
+
+  late final _edgeLengthRadsPtr = _lookup<
+          ffi
+          .NativeFunction<H3Error Function(H3Index, ffi.Pointer<ffi.Double>)>>(
+      'edgeLengthRads');
+  late final _edgeLengthRads = _edgeLengthRadsPtr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Double>)>();
+
+  /// @brief exact length for a specific directed edge in kilometers
+  int edgeLengthKm(
+    int edge,
+    ffi.Pointer<ffi.Double> length,
   ) {
     return _edgeLengthKm(
-      res,
+      edge,
+      length,
     );
   }
 
-  late final _edgeLengthKmPtr =
-      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Int32)>>(
-          'edgeLengthKm');
+  late final _edgeLengthKmPtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(H3Index, ffi.Pointer<ffi.Double>)>>('edgeLengthKm');
   late final _edgeLengthKm =
-      _edgeLengthKmPtr.asFunction<double Function(int)>();
+      _edgeLengthKmPtr.asFunction<int Function(int, ffi.Pointer<ffi.Double>)>();
 
-  double edgeLengthM(
-    int res,
+  /// @brief exact length for a specific directed edge in meters
+  int edgeLengthM(
+    int edge,
+    ffi.Pointer<ffi.Double> length,
   ) {
     return _edgeLengthM(
-      res,
-    );
-  }
-
-  late final _edgeLengthMPtr =
-      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Int32)>>(
-          'edgeLengthM');
-  late final _edgeLengthM = _edgeLengthMPtr.asFunction<double Function(int)>();
-
-  double exactEdgeLengthRads(
-    int edge,
-  ) {
-    return _exactEdgeLengthRads(
       edge,
+      length,
     );
   }
 
-  late final _exactEdgeLengthRadsPtr =
-      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Uint64)>>(
-          'exactEdgeLengthRads');
-  late final _exactEdgeLengthRads =
-      _exactEdgeLengthRadsPtr.asFunction<double Function(int)>();
-
-  double exactEdgeLengthKm(
-    int edge,
-  ) {
-    return _exactEdgeLengthKm(
-      edge,
-    );
-  }
-
-  late final _exactEdgeLengthKmPtr =
-      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Uint64)>>(
-          'exactEdgeLengthKm');
-  late final _exactEdgeLengthKm =
-      _exactEdgeLengthKmPtr.asFunction<double Function(int)>();
-
-  double exactEdgeLengthM(
-    int edge,
-  ) {
-    return _exactEdgeLengthM(
-      edge,
-    );
-  }
-
-  late final _exactEdgeLengthMPtr =
-      _lookup<ffi.NativeFunction<ffi.Double Function(ffi.Uint64)>>(
-          'exactEdgeLengthM');
-  late final _exactEdgeLengthM =
-      _exactEdgeLengthMPtr.asFunction<double Function(int)>();
-
-  int numHexagons(
-    int res,
-  ) {
-    return _numHexagons(
-      res,
-    );
-  }
-
-  late final _numHexagonsPtr =
-      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.Int32)>>('numHexagons');
-  late final _numHexagons = _numHexagonsPtr.asFunction<int Function(int)>();
-
-  int res0IndexCount() {
-    return _res0IndexCount();
-  }
-
-  late final _res0IndexCountPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('res0IndexCount');
-  late final _res0IndexCount = _res0IndexCountPtr.asFunction<int Function()>();
-
-  void getRes0Indexes(
-    ffi.Pointer<ffi.Uint64> out,
-  ) {
-    return _getRes0Indexes(
-      out,
-    );
-  }
-
-  late final _getRes0IndexesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Uint64>)>>(
-          'getRes0Indexes');
-  late final _getRes0Indexes =
-      _getRes0IndexesPtr.asFunction<void Function(ffi.Pointer<ffi.Uint64>)>();
-
-  int pentagonIndexCount() {
-    return _pentagonIndexCount();
-  }
-
-  late final _pentagonIndexCountPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('pentagonIndexCount');
-  late final _pentagonIndexCount =
-      _pentagonIndexCountPtr.asFunction<int Function()>();
-
-  void getPentagonIndexes(
-    int res,
-    ffi.Pointer<ffi.Uint64> out,
-  ) {
-    return _getPentagonIndexes(
-      res,
-      out,
-    );
-  }
-
-  late final _getPentagonIndexesPtr = _lookup<
+  late final _edgeLengthMPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Int32, ffi.Pointer<ffi.Uint64>)>>('getPentagonIndexes');
-  late final _getPentagonIndexes = _getPentagonIndexesPtr
-      .asFunction<void Function(int, ffi.Pointer<ffi.Uint64>)>();
+          H3Error Function(H3Index, ffi.Pointer<ffi.Double>)>>('edgeLengthM');
+  late final _edgeLengthM =
+      _edgeLengthMPtr.asFunction<int Function(int, ffi.Pointer<ffi.Double>)>();
 
-  int h3GetResolution(
+  /// @defgroup getNumCells getNumCells
+  /// Functions for getNumCells
+  /// @{
+  /// /
+  /// /** @brief number of cells (hexagons and pentagons) for a given resolution
+  ///
+  /// It works out to be `2 + 120*7^r` for resolution `r`.
+  ///
+  /// # Mathematical notes
+  ///
+  /// Let h(n) be the number of children n levels below
+  /// a single *hexagon*.
+  ///
+  /// Then h(n) = 7^n.
+  ///
+  /// Let p(n) be the number of children n levels below
+  /// a single *pentagon*.
+  ///
+  /// Then p(0) = 1, and p(1) = 6, since each pentagon
+  /// has 5 hexagonal immediate children and 1 pentagonal
+  /// immediate child.
+  ///
+  /// In general, we have the recurrence relation
+  ///
+  /// p(n) = 5*h(n-1) + p(n-1)
+  /// = 5*7^(n-1) + p(n-1).
+  ///
+  /// Working through the recurrence, we get that
+  ///
+  /// p(n) = 1 + 5*\sum_{k=1}^n 7^{k-1}
+  /// = 1 + 5*(7^n - 1)/6,
+  ///
+  /// using the closed form for a geometric series.
+  ///
+  /// Using the closed forms for h(n) and p(n), we can
+  /// get a closed form for the total number of cells
+  /// at resolution r:
+  ///
+  /// c(r) = 12*p(r) + 110*h(r)
+  /// = 2 + 120*7^r.
+  ///
+  ///
+  /// @param   res  H3 cell resolution
+  ///
+  /// @return       number of cells at resolution `res`
+  int getNumCells(
+    int res,
+    ffi.Pointer<ffi.Int64> out,
+  ) {
+    return _getNumCells(
+      res,
+      out,
+    );
+  }
+
+  late final _getNumCellsPtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(ffi.Int, ffi.Pointer<ffi.Int64>)>>('getNumCells');
+  late final _getNumCells =
+      _getNumCellsPtr.asFunction<int Function(int, ffi.Pointer<ffi.Int64>)>();
+
+  /// @brief provides all base cells in H3Index format
+  int getRes0Cells(
+    ffi.Pointer<H3Index> out,
+  ) {
+    return _getRes0Cells(
+      out,
+    );
+  }
+
+  late final _getRes0CellsPtr =
+      _lookup<ffi.NativeFunction<H3Error Function(ffi.Pointer<H3Index>)>>(
+          'getRes0Cells');
+  late final _getRes0Cells =
+      _getRes0CellsPtr.asFunction<int Function(ffi.Pointer<H3Index>)>();
+
+  /// @brief generates all pentagons at the specified resolution
+  int getPentagons(
+    int res,
+    ffi.Pointer<H3Index> out,
+  ) {
+    return _getPentagons(
+      res,
+      out,
+    );
+  }
+
+  late final _getPentagonsPtr = _lookup<
+          ffi.NativeFunction<H3Error Function(ffi.Int, ffi.Pointer<H3Index>)>>(
+      'getPentagons');
+  late final _getPentagons =
+      _getPentagonsPtr.asFunction<int Function(int, ffi.Pointer<H3Index>)>();
+
+  /// @defgroup getResolution getResolution
+  /// Functions for getResolution
+  /// @{
+  /// /
+  /// /** @brief returns the resolution of the provided H3 index
+  /// Works on both cells and directed edges.
+  int getResolution(
     int h,
   ) {
-    return _h3GetResolution(
+    return _getResolution(
       h,
     );
   }
 
-  late final _h3GetResolutionPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Uint64)>>(
-          'h3GetResolution');
-  late final _h3GetResolution =
-      _h3GetResolutionPtr.asFunction<int Function(int)>();
+  late final _getResolutionPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(H3Index)>>('getResolution');
+  late final _getResolution = _getResolutionPtr.asFunction<int Function(int)>();
 
-  int h3GetBaseCell(
+  /// @defgroup getBaseCellNumber getBaseCellNumber
+  /// Functions for getBaseCellNumber
+  /// @{
+  /// /
+  /// /** @brief returns the base cell "number" (0 to 121) of the provided H3 cell
+  ///
+  /// Note: Technically works on H3 edges, but will return base cell of the
+  /// origin cell.
+  int getBaseCellNumber(
     int h,
   ) {
-    return _h3GetBaseCell(
+    return _getBaseCellNumber(
       h,
     );
   }
 
-  late final _h3GetBaseCellPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Uint64)>>(
-          'h3GetBaseCell');
-  late final _h3GetBaseCell = _h3GetBaseCellPtr.asFunction<int Function(int)>();
+  late final _getBaseCellNumberPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(H3Index)>>(
+          'getBaseCellNumber');
+  late final _getBaseCellNumber =
+      _getBaseCellNumberPtr.asFunction<int Function(int)>();
 
+  /// @defgroup stringToH3 stringToH3
+  /// Functions for stringToH3
+  /// @{
+  /// /
+  /// /** @brief converts the canonical string format to H3Index format
   int stringToH3(
-    ffi.Pointer<ffi.Int8> str,
+    ffi.Pointer<ffi.Char> str,
+    ffi.Pointer<H3Index> out,
   ) {
     return _stringToH3(
       str,
+      out,
     );
   }
 
-  late final _stringToH3Ptr =
-      _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.Pointer<ffi.Int8>)>>(
-          'stringToH3');
-  late final _stringToH3 =
-      _stringToH3Ptr.asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
+  late final _stringToH3Ptr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<H3Index>)>>('stringToH3');
+  late final _stringToH3 = _stringToH3Ptr
+      .asFunction<int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<H3Index>)>();
 
-  void h3ToString(
+  /// @defgroup h3ToString h3ToString
+  /// Functions for h3ToString
+  /// @{
+  /// /
+  /// /** @brief converts an H3Index to a canonical string
+  int h3ToString(
     int h,
-    ffi.Pointer<ffi.Int8> str,
+    ffi.Pointer<ffi.Char> str,
     int sz,
   ) {
     return _h3ToString(
@@ -598,469 +728,628 @@ class H3C {
 
   late final _h3ToStringPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Uint64, ffi.Pointer<ffi.Int8>, ffi.Uint64)>>('h3ToString');
+          H3Error Function(
+              H3Index, ffi.Pointer<ffi.Char>, ffi.Size)>>('h3ToString');
   late final _h3ToString = _h3ToStringPtr
-      .asFunction<void Function(int, ffi.Pointer<ffi.Int8>, int)>();
+      .asFunction<int Function(int, ffi.Pointer<ffi.Char>, int)>();
 
-  int h3IsValid(
+  /// @defgroup isValidCell isValidCell
+  /// Functions for isValidCell
+  /// @{
+  /// /
+  /// /** @brief confirms if an H3Index is a valid cell (hexagon or pentagon)
+  /// In particular, returns 0 (False) for H3 directed edges or invalid data
+  int isValidCell(
     int h,
   ) {
-    return _h3IsValid(
+    return _isValidCell(
       h,
     );
   }
 
-  late final _h3IsValidPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Uint64)>>('h3IsValid');
-  late final _h3IsValid = _h3IsValidPtr.asFunction<int Function(int)>();
+  late final _isValidCellPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(H3Index)>>('isValidCell');
+  late final _isValidCell = _isValidCellPtr.asFunction<int Function(int)>();
 
-  int h3ToParent(
+  /// @defgroup cellToParent cellToParent
+  /// Functions for cellToParent
+  /// @{
+  /// /
+  /// /** @brief returns the parent (or grandparent, etc) cell of the given cell
+  int cellToParent(
     int h,
     int parentRes,
+    ffi.Pointer<H3Index> parent,
   ) {
-    return _h3ToParent(
+    return _cellToParent(
       h,
       parentRes,
+      parent,
     );
   }
 
-  late final _h3ToParentPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.Uint64, ffi.Int32)>>(
-          'h3ToParent');
-  late final _h3ToParent = _h3ToParentPtr.asFunction<int Function(int, int)>();
+  late final _cellToParentPtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(
+              H3Index, ffi.Int, ffi.Pointer<H3Index>)>>('cellToParent');
+  late final _cellToParent = _cellToParentPtr
+      .asFunction<int Function(int, int, ffi.Pointer<H3Index>)>();
 
-  int maxH3ToChildrenSize(
+  /// @brief provides the children (or grandchildren, etc) of the given cell
+  int cellToChildren(
     int h,
     int childRes,
+    ffi.Pointer<H3Index> children,
   ) {
-    return _maxH3ToChildrenSize(
-      h,
-      childRes,
-    );
-  }
-
-  late final _maxH3ToChildrenSizePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Uint64, ffi.Int32)>>(
-          'maxH3ToChildrenSize');
-  late final _maxH3ToChildrenSize =
-      _maxH3ToChildrenSizePtr.asFunction<int Function(int, int)>();
-
-  void h3ToChildren(
-    int h,
-    int childRes,
-    ffi.Pointer<ffi.Uint64> children,
-  ) {
-    return _h3ToChildren(
+    return _cellToChildren(
       h,
       childRes,
       children,
     );
   }
 
-  late final _h3ToChildrenPtr = _lookup<
+  late final _cellToChildrenPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Uint64, ffi.Int32, ffi.Pointer<ffi.Uint64>)>>('h3ToChildren');
-  late final _h3ToChildren = _h3ToChildrenPtr
-      .asFunction<void Function(int, int, ffi.Pointer<ffi.Uint64>)>();
+          H3Error Function(
+              H3Index, ffi.Int, ffi.Pointer<H3Index>)>>('cellToChildren');
+  late final _cellToChildren = _cellToChildrenPtr
+      .asFunction<int Function(int, int, ffi.Pointer<H3Index>)>();
 
-  int h3ToCenterChild(
+  /// @defgroup cellToCenterChild cellToCenterChild
+  /// Functions for cellToCenterChild
+  /// @{
+  /// /
+  /// /** @brief returns the center child of the given cell at the specified
+  /// resolution
+  int cellToCenterChild(
     int h,
     int childRes,
+    ffi.Pointer<H3Index> child,
   ) {
-    return _h3ToCenterChild(
+    return _cellToCenterChild(
       h,
       childRes,
+      child,
     );
   }
 
-  late final _h3ToCenterChildPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.Uint64, ffi.Int32)>>(
-          'h3ToCenterChild');
-  late final _h3ToCenterChild =
-      _h3ToCenterChildPtr.asFunction<int Function(int, int)>();
+  late final _cellToCenterChildPtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(
+              H3Index, ffi.Int, ffi.Pointer<H3Index>)>>('cellToCenterChild');
+  late final _cellToCenterChild = _cellToCenterChildPtr
+      .asFunction<int Function(int, int, ffi.Pointer<H3Index>)>();
 
-  int compact(
-    ffi.Pointer<ffi.Uint64> h3Set,
-    ffi.Pointer<ffi.Uint64> compactedSet,
+  /// @defgroup compactCells compactCells
+  /// Functions for compactCells
+  /// @{
+  /// /
+  /// /** @brief compacts the given set of hexagons as best as possible
+  int compactCells(
+    ffi.Pointer<H3Index> h3Set,
+    ffi.Pointer<H3Index> compactedSet,
     int numHexes,
   ) {
-    return _compact(
+    return _compactCells(
       h3Set,
       compactedSet,
       numHexes,
     );
   }
 
-  late final _compactPtr = _lookup<
+  late final _compactCellsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Uint64>, ffi.Pointer<ffi.Uint64>,
-              ffi.Int32)>>('compact');
-  late final _compact = _compactPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Uint64>, ffi.Pointer<ffi.Uint64>, int)>();
+          H3Error Function(ffi.Pointer<H3Index>, ffi.Pointer<H3Index>,
+              ffi.Int64)>>('compactCells');
+  late final _compactCells = _compactCellsPtr.asFunction<
+      int Function(ffi.Pointer<H3Index>, ffi.Pointer<H3Index>, int)>();
 
-  int maxUncompactSize(
-    ffi.Pointer<ffi.Uint64> compactedSet,
-    int numHexes,
+  /// @brief uncompacts the compacted hexagon set
+  int uncompactCells(
+    ffi.Pointer<H3Index> compactedSet,
+    int numCompacted,
+    ffi.Pointer<H3Index> outSet,
+    int numOut,
     int res,
   ) {
-    return _maxUncompactSize(
+    return _uncompactCells(
       compactedSet,
-      numHexes,
+      numCompacted,
+      outSet,
+      numOut,
       res,
     );
   }
 
-  late final _maxUncompactSizePtr = _lookup<
+  late final _uncompactCellsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Uint64>, ffi.Int32,
-              ffi.Int32)>>('maxUncompactSize');
-  late final _maxUncompactSize = _maxUncompactSizePtr
-      .asFunction<int Function(ffi.Pointer<ffi.Uint64>, int, int)>();
-
-  int uncompact(
-    ffi.Pointer<ffi.Uint64> compactedSet,
-    int numHexes,
-    ffi.Pointer<ffi.Uint64> h3Set,
-    int maxHexes,
-    int res,
-  ) {
-    return _uncompact(
-      compactedSet,
-      numHexes,
-      h3Set,
-      maxHexes,
-      res,
-    );
-  }
-
-  late final _uncompactPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<ffi.Uint64>, ffi.Int32,
-              ffi.Pointer<ffi.Uint64>, ffi.Int32, ffi.Int32)>>('uncompact');
-  late final _uncompact = _uncompactPtr.asFunction<
+          H3Error Function(ffi.Pointer<H3Index>, ffi.Int64,
+              ffi.Pointer<H3Index>, ffi.Int64, ffi.Int)>>('uncompactCells');
+  late final _uncompactCells = _uncompactCellsPtr.asFunction<
       int Function(
-          ffi.Pointer<ffi.Uint64>, int, ffi.Pointer<ffi.Uint64>, int, int)>();
+          ffi.Pointer<H3Index>, int, ffi.Pointer<H3Index>, int, int)>();
 
-  int h3IsResClassIII(
+  /// @defgroup isResClassIII isResClassIII
+  /// Functions for isResClassIII
+  /// @{
+  /// /
+  /// /** @brief determines if a hexagon is Class III (or Class II)
+  int isResClassIII(
     int h,
   ) {
-    return _h3IsResClassIII(
+    return _isResClassIII(
       h,
     );
   }
 
-  late final _h3IsResClassIIIPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Uint64)>>(
-          'h3IsResClassIII');
-  late final _h3IsResClassIII =
-      _h3IsResClassIIIPtr.asFunction<int Function(int)>();
+  late final _isResClassIIIPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(H3Index)>>('isResClassIII');
+  late final _isResClassIII = _isResClassIIIPtr.asFunction<int Function(int)>();
 
-  int h3IsPentagon(
+  /// @defgroup isPentagon isPentagon
+  /// Functions for isPentagon
+  /// @{
+  /// /
+  /// /** @brief determines if an H3 cell is a pentagon
+  int isPentagon(
     int h,
   ) {
-    return _h3IsPentagon(
+    return _isPentagon(
       h,
     );
   }
 
-  late final _h3IsPentagonPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Uint64)>>(
-          'h3IsPentagon');
-  late final _h3IsPentagon = _h3IsPentagonPtr.asFunction<int Function(int)>();
+  late final _isPentagonPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(H3Index)>>('isPentagon');
+  late final _isPentagon = _isPentagonPtr.asFunction<int Function(int)>();
 
+  /// @defgroup getIcosahedronFaces getIcosahedronFaces
+  /// Functions for getIcosahedronFaces
+  /// @{
+  /// /
+  /// /** @brief Max number of icosahedron faces intersected by an index
   int maxFaceCount(
     int h3,
+    ffi.Pointer<ffi.Int> out,
   ) {
     return _maxFaceCount(
-      h3,
-    );
-  }
-
-  late final _maxFaceCountPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Uint64)>>(
-          'maxFaceCount');
-  late final _maxFaceCount = _maxFaceCountPtr.asFunction<int Function(int)>();
-
-  void h3GetFaces(
-    int h3,
-    ffi.Pointer<ffi.Int32> out,
-  ) {
-    return _h3GetFaces(
       h3,
       out,
     );
   }
 
-  late final _h3GetFacesPtr = _lookup<
+  late final _maxFaceCountPtr = _lookup<
+          ffi.NativeFunction<H3Error Function(H3Index, ffi.Pointer<ffi.Int>)>>(
+      'maxFaceCount');
+  late final _maxFaceCount =
+      _maxFaceCountPtr.asFunction<int Function(int, ffi.Pointer<ffi.Int>)>();
+
+  /// @brief Find all icosahedron faces intersected by a given H3 index
+  int getIcosahedronFaces(
+    int h3,
+    ffi.Pointer<ffi.Int> out,
+  ) {
+    return _getIcosahedronFaces(
+      h3,
+      out,
+    );
+  }
+
+  late final _getIcosahedronFacesPtr = _lookup<
+          ffi.NativeFunction<H3Error Function(H3Index, ffi.Pointer<ffi.Int>)>>(
+      'getIcosahedronFaces');
+  late final _getIcosahedronFaces = _getIcosahedronFacesPtr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Int>)>();
+
+  /// @defgroup areNeighborCells areNeighborCells
+  /// Functions for areNeighborCells
+  /// @{
+  /// /
+  /// /** @brief returns whether or not the provided hexagons border
+  int areNeighborCells(
+    int origin,
+    int destination,
+    ffi.Pointer<ffi.Int> out,
+  ) {
+    return _areNeighborCells(
+      origin,
+      destination,
+      out,
+    );
+  }
+
+  late final _areNeighborCellsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Uint64, ffi.Pointer<ffi.Int32>)>>('h3GetFaces');
-  late final _h3GetFaces =
-      _h3GetFacesPtr.asFunction<void Function(int, ffi.Pointer<ffi.Int32>)>();
+          H3Error Function(
+              H3Index, H3Index, ffi.Pointer<ffi.Int>)>>('areNeighborCells');
+  late final _areNeighborCells = _areNeighborCellsPtr
+      .asFunction<int Function(int, int, ffi.Pointer<ffi.Int>)>();
 
-  int h3IndexesAreNeighbors(
+  /// @defgroup cellsToDirectedEdge cellsToDirectedEdge
+  /// Functions for cellsToDirectedEdge
+  /// @{
+  /// /
+  /// /** @brief returns the directed edge H3Index for the specified origin and
+  /// destination
+  int cellsToDirectedEdge(
     int origin,
     int destination,
+    ffi.Pointer<H3Index> out,
   ) {
-    return _h3IndexesAreNeighbors(
+    return _cellsToDirectedEdge(
       origin,
       destination,
+      out,
     );
   }
 
-  late final _h3IndexesAreNeighborsPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Uint64, ffi.Uint64)>>(
-          'h3IndexesAreNeighbors');
-  late final _h3IndexesAreNeighbors =
-      _h3IndexesAreNeighborsPtr.asFunction<int Function(int, int)>();
+  late final _cellsToDirectedEdgePtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(
+              H3Index, H3Index, ffi.Pointer<H3Index>)>>('cellsToDirectedEdge');
+  late final _cellsToDirectedEdge = _cellsToDirectedEdgePtr
+      .asFunction<int Function(int, int, ffi.Pointer<H3Index>)>();
 
-  int getH3UnidirectionalEdge(
-    int origin,
-    int destination,
-  ) {
-    return _getH3UnidirectionalEdge(
-      origin,
-      destination,
-    );
-  }
-
-  late final _getH3UnidirectionalEdgePtr =
-      _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.Uint64, ffi.Uint64)>>(
-          'getH3UnidirectionalEdge');
-  late final _getH3UnidirectionalEdge =
-      _getH3UnidirectionalEdgePtr.asFunction<int Function(int, int)>();
-
-  int h3UnidirectionalEdgeIsValid(
+  /// @defgroup isValidDirectedEdge isValidDirectedEdge
+  /// Functions for isValidDirectedEdge
+  /// @{
+  /// /
+  /// /** @brief returns whether the H3Index is a valid directed edge
+  int isValidDirectedEdge(
     int edge,
   ) {
-    return _h3UnidirectionalEdgeIsValid(
+    return _isValidDirectedEdge(
       edge,
     );
   }
 
-  late final _h3UnidirectionalEdgeIsValidPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Uint64)>>(
-          'h3UnidirectionalEdgeIsValid');
-  late final _h3UnidirectionalEdgeIsValid =
-      _h3UnidirectionalEdgeIsValidPtr.asFunction<int Function(int)>();
+  late final _isValidDirectedEdgePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(H3Index)>>(
+          'isValidDirectedEdge');
+  late final _isValidDirectedEdge =
+      _isValidDirectedEdgePtr.asFunction<int Function(int)>();
 
-  int getOriginH3IndexFromUnidirectionalEdge(
+  /// @defgroup getDirectedEdgeOrigin \
+  /// getDirectedEdgeOrigin
+  /// Functions for getDirectedEdgeOrigin
+  /// @{
+  /// /
+  /// /** @brief Returns the origin hexagon H3Index from the directed edge
+  /// H3Index
+  int getDirectedEdgeOrigin(
     int edge,
+    ffi.Pointer<H3Index> out,
   ) {
-    return _getOriginH3IndexFromUnidirectionalEdge(
+    return _getDirectedEdgeOrigin(
       edge,
+      out,
     );
   }
 
-  late final _getOriginH3IndexFromUnidirectionalEdgePtr =
-      _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.Uint64)>>(
-          'getOriginH3IndexFromUnidirectionalEdge');
-  late final _getOriginH3IndexFromUnidirectionalEdge =
-      _getOriginH3IndexFromUnidirectionalEdgePtr
-          .asFunction<int Function(int)>();
+  late final _getDirectedEdgeOriginPtr = _lookup<
+          ffi.NativeFunction<H3Error Function(H3Index, ffi.Pointer<H3Index>)>>(
+      'getDirectedEdgeOrigin');
+  late final _getDirectedEdgeOrigin = _getDirectedEdgeOriginPtr
+      .asFunction<int Function(int, ffi.Pointer<H3Index>)>();
 
-  int getDestinationH3IndexFromUnidirectionalEdge(
+  /// @defgroup getDirectedEdgeDestination \
+  /// getDirectedEdgeDestination
+  /// Functions for getDirectedEdgeDestination
+  /// @{
+  /// /
+  /// /** @brief Returns the destination hexagon H3Index from the directed edge
+  /// H3Index
+  int getDirectedEdgeDestination(
     int edge,
+    ffi.Pointer<H3Index> out,
   ) {
-    return _getDestinationH3IndexFromUnidirectionalEdge(
+    return _getDirectedEdgeDestination(
       edge,
+      out,
     );
   }
 
-  late final _getDestinationH3IndexFromUnidirectionalEdgePtr =
-      _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.Uint64)>>(
-          'getDestinationH3IndexFromUnidirectionalEdge');
-  late final _getDestinationH3IndexFromUnidirectionalEdge =
-      _getDestinationH3IndexFromUnidirectionalEdgePtr
-          .asFunction<int Function(int)>();
+  late final _getDirectedEdgeDestinationPtr = _lookup<
+          ffi.NativeFunction<H3Error Function(H3Index, ffi.Pointer<H3Index>)>>(
+      'getDirectedEdgeDestination');
+  late final _getDirectedEdgeDestination = _getDirectedEdgeDestinationPtr
+      .asFunction<int Function(int, ffi.Pointer<H3Index>)>();
 
-  void getH3IndexesFromUnidirectionalEdge(
+  /// @defgroup directedEdgeToCells \
+  /// directedEdgeToCells
+  /// Functions for directedEdgeToCells
+  /// @{
+  /// /
+  /// /** @brief Returns the origin and destination hexagons from the directed
+  /// edge H3Index
+  int directedEdgeToCells(
     int edge,
-    ffi.Pointer<ffi.Uint64> originDestination,
+    ffi.Pointer<H3Index> originDestination,
   ) {
-    return _getH3IndexesFromUnidirectionalEdge(
+    return _directedEdgeToCells(
       edge,
       originDestination,
     );
   }
 
-  late final _getH3IndexesFromUnidirectionalEdgePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Uint64,
-              ffi.Pointer<ffi.Uint64>)>>('getH3IndexesFromUnidirectionalEdge');
-  late final _getH3IndexesFromUnidirectionalEdge =
-      _getH3IndexesFromUnidirectionalEdgePtr
-          .asFunction<void Function(int, ffi.Pointer<ffi.Uint64>)>();
+  late final _directedEdgeToCellsPtr = _lookup<
+          ffi.NativeFunction<H3Error Function(H3Index, ffi.Pointer<H3Index>)>>(
+      'directedEdgeToCells');
+  late final _directedEdgeToCells = _directedEdgeToCellsPtr
+      .asFunction<int Function(int, ffi.Pointer<H3Index>)>();
 
-  void getH3UnidirectionalEdgesFromHexagon(
+  /// @defgroup originToDirectedEdges \
+  /// originToDirectedEdges
+  /// Functions for originToDirectedEdges
+  /// @{
+  /// /
+  /// /** @brief Returns the 6 (or 5 for pentagons) edges associated with the H3Index
+  int originToDirectedEdges(
     int origin,
-    ffi.Pointer<ffi.Uint64> edges,
+    ffi.Pointer<H3Index> edges,
   ) {
-    return _getH3UnidirectionalEdgesFromHexagon(
+    return _originToDirectedEdges(
       origin,
       edges,
     );
   }
 
-  late final _getH3UnidirectionalEdgesFromHexagonPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Uint64,
-              ffi.Pointer<ffi.Uint64>)>>('getH3UnidirectionalEdgesFromHexagon');
-  late final _getH3UnidirectionalEdgesFromHexagon =
-      _getH3UnidirectionalEdgesFromHexagonPtr
-          .asFunction<void Function(int, ffi.Pointer<ffi.Uint64>)>();
+  late final _originToDirectedEdgesPtr = _lookup<
+          ffi.NativeFunction<H3Error Function(H3Index, ffi.Pointer<H3Index>)>>(
+      'originToDirectedEdges');
+  late final _originToDirectedEdges = _originToDirectedEdgesPtr
+      .asFunction<int Function(int, ffi.Pointer<H3Index>)>();
 
-  void getH3UnidirectionalEdgeBoundary(
+  /// @defgroup directedEdgeToBoundary directedEdgeToBoundary
+  /// Functions for directedEdgeToBoundary
+  /// @{
+  /// /
+  /// /** @brief Returns the CellBoundary containing the coordinates of the edge
+  int directedEdgeToBoundary(
     int edge,
-    ffi.Pointer<GeoBoundary> gb,
+    ffi.Pointer<CellBoundary> gb,
   ) {
-    return _getH3UnidirectionalEdgeBoundary(
+    return _directedEdgeToBoundary(
       edge,
       gb,
     );
   }
 
-  late final _getH3UnidirectionalEdgeBoundaryPtr = _lookup<
+  late final _directedEdgeToBoundaryPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Uint64,
-              ffi.Pointer<GeoBoundary>)>>('getH3UnidirectionalEdgeBoundary');
-  late final _getH3UnidirectionalEdgeBoundary =
-      _getH3UnidirectionalEdgeBoundaryPtr
-          .asFunction<void Function(int, ffi.Pointer<GeoBoundary>)>();
+          H3Error Function(
+              H3Index, ffi.Pointer<CellBoundary>)>>('directedEdgeToBoundary');
+  late final _directedEdgeToBoundary = _directedEdgeToBoundaryPtr
+      .asFunction<int Function(int, ffi.Pointer<CellBoundary>)>();
 
-  int h3Distance(
+  /// @defgroup gridDistance gridDistance
+  /// Functions for gridDistance
+  /// @{
+  /// /
+  /// /** @brief Returns grid distance between two indexes
+  int gridDistance(
     int origin,
     int h3,
+    ffi.Pointer<ffi.Int64> distance,
   ) {
-    return _h3Distance(
+    return _gridDistance(
       origin,
       h3,
+      distance,
     );
   }
 
-  late final _h3DistancePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Uint64, ffi.Uint64)>>(
-          'h3Distance');
-  late final _h3Distance = _h3DistancePtr.asFunction<int Function(int, int)>();
+  late final _gridDistancePtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(
+              H3Index, H3Index, ffi.Pointer<ffi.Int64>)>>('gridDistance');
+  late final _gridDistance = _gridDistancePtr
+      .asFunction<int Function(int, int, ffi.Pointer<ffi.Int64>)>();
 
-  int h3LineSize(
+  /// @brief Line of h3 indexes connecting two indexes
+  int gridPathCells(
     int start,
     int end,
+    ffi.Pointer<H3Index> out,
   ) {
-    return _h3LineSize(
-      start,
-      end,
-    );
-  }
-
-  late final _h3LineSizePtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Uint64, ffi.Uint64)>>(
-          'h3LineSize');
-  late final _h3LineSize = _h3LineSizePtr.asFunction<int Function(int, int)>();
-
-  int h3Line(
-    int start,
-    int end,
-    ffi.Pointer<ffi.Uint64> out,
-  ) {
-    return _h3Line(
+    return _gridPathCells(
       start,
       end,
       out,
     );
   }
 
-  late final _h3LinePtr = _lookup<
+  late final _gridPathCellsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Uint64, ffi.Uint64, ffi.Pointer<ffi.Uint64>)>>('h3Line');
-  late final _h3Line =
-      _h3LinePtr.asFunction<int Function(int, int, ffi.Pointer<ffi.Uint64>)>();
+          H3Error Function(
+              H3Index, H3Index, ffi.Pointer<H3Index>)>>('gridPathCells');
+  late final _gridPathCells = _gridPathCellsPtr
+      .asFunction<int Function(int, int, ffi.Pointer<H3Index>)>();
 
-  int experimentalH3ToLocalIj(
+  /// @defgroup cellToLocalIj cellToLocalIj
+  /// Functions for cellToLocalIj
+  /// @{
+  /// /
+  /// /** @brief Returns two dimensional coordinates for the given index
+  int cellToLocalIj(
     int origin,
     int h3,
+    int mode,
     ffi.Pointer<CoordIJ> out,
   ) {
-    return _experimentalH3ToLocalIj(
+    return _cellToLocalIj(
       origin,
       h3,
+      mode,
       out,
     );
   }
 
-  late final _experimentalH3ToLocalIjPtr = _lookup<
+  late final _cellToLocalIjPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Uint64, ffi.Uint64,
-              ffi.Pointer<CoordIJ>)>>('experimentalH3ToLocalIj');
-  late final _experimentalH3ToLocalIj = _experimentalH3ToLocalIjPtr
-      .asFunction<int Function(int, int, ffi.Pointer<CoordIJ>)>();
+          H3Error Function(H3Index, H3Index, ffi.Uint32,
+              ffi.Pointer<CoordIJ>)>>('cellToLocalIj');
+  late final _cellToLocalIj = _cellToLocalIjPtr
+      .asFunction<int Function(int, int, int, ffi.Pointer<CoordIJ>)>();
 
-  int experimentalLocalIjToH3(
+  /// @defgroup localIjToCell localIjToCell
+  /// Functions for localIjToCell
+  /// @{
+  /// /
+  /// /** @brief Returns index for the given two dimensional coordinates
+  int localIjToCell(
     int origin,
     ffi.Pointer<CoordIJ> ij,
-    ffi.Pointer<ffi.Uint64> out,
+    int mode,
+    ffi.Pointer<H3Index> out,
   ) {
-    return _experimentalLocalIjToH3(
+    return _localIjToCell(
       origin,
       ij,
+      mode,
       out,
     );
   }
 
-  late final _experimentalLocalIjToH3Ptr = _lookup<
+  late final _localIjToCellPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Uint64, ffi.Pointer<CoordIJ>,
-              ffi.Pointer<ffi.Uint64>)>>('experimentalLocalIjToH3');
-  late final _experimentalLocalIjToH3 = _experimentalLocalIjToH3Ptr.asFunction<
-      int Function(int, ffi.Pointer<CoordIJ>, ffi.Pointer<ffi.Uint64>)>();
+          H3Error Function(H3Index, ffi.Pointer<CoordIJ>, ffi.Uint32,
+              ffi.Pointer<H3Index>)>>('localIjToCell');
+  late final _localIjToCell = _localIjToCellPtr.asFunction<
+      int Function(int, ffi.Pointer<CoordIJ>, int, ffi.Pointer<H3Index>)>();
 }
 
-/// @struct GeoCoord
+abstract class H3ErrorCodes {
+  /// Success (no error)
+  static const int E_SUCCESS = 0;
+  static const int E_FAILED = 1;
+
+  /// Argument was outside of acceptable range (when a more
+  /// specific error code is not available)
+  static const int E_DOMAIN = 2;
+  static const int E_LATLNG_DOMAIN = 3;
+
+  /// Resolution argument was outside of acceptable range
+  static const int E_RES_DOMAIN = 4;
+
+  /// `H3Index` cell argument was not valid
+  static const int E_CELL_INVALID = 5;
+
+  /// `H3Index` directed edge argument was not valid
+  static const int E_DIR_EDGE_INVALID = 6;
+  static const int E_UNDIR_EDGE_INVALID = 7;
+
+  /// `H3Index` vertex argument was not valid
+  static const int E_VERTEX_INVALID = 8;
+
+  /// Pentagon distortion was encountered which the algorithm
+  /// could not handle it
+  static const int E_PENTAGON = 9;
+
+  /// Duplicate input was encountered in the arguments
+  /// and the algorithm could not handle it
+  static const int E_DUPLICATE_INPUT = 10;
+
+  /// `H3Index` cell arguments were not neighbors
+  static const int E_NOT_NEIGHBORS = 11;
+  static const int E_RES_MISMATCH = 12;
+
+  /// Necessary memory allocation failed
+  static const int E_MEMORY_ALLOC = 13;
+
+  /// Bounds of provided memory were not large enough
+  static const int E_MEMORY_BOUNDS = 14;
+
+  /// Mode or flags argument was not valid.
+  static const int E_OPTION_INVALID = 15;
+}
+
+/// @struct LatLng
 /// @brief latitude/longitude in radians
-class GeoCoord extends ffi.Struct {
+class LatLng extends ffi.Struct {
   /// < latitude in radians
   @ffi.Double()
   external double lat;
 
   /// < longitude in radians
   @ffi.Double()
-  external double lon;
+  external double lng;
 }
 
-/// @struct GeoBoundary
+/// @struct CellBoundary
 /// @brief cell boundary in latitude/longitude
-class GeoBoundary extends ffi.Struct {
+class CellBoundary extends ffi.Struct {
   /// < number of vertices
-  @ffi.Int32()
+  @ffi.Int()
   external int numVerts;
 
   @ffi.Array.multi([10])
-  external ffi.Array<GeoCoord> verts;
+  external ffi.Array<LatLng> verts;
+}
+
+/// @struct GeoLoop
+/// @brief similar to CellBoundary, but requires more alloc work
+class GeoLoop extends ffi.Struct {
+  @ffi.Int()
+  external int numVerts;
+
+  external ffi.Pointer<LatLng> verts;
 }
 
 /// @struct GeoPolygon
 /// @brief Simplified core of GeoJSON Polygon coordinates definition
 class GeoPolygon extends ffi.Struct {
   /// < exterior boundary of the polygon
-  external Geofence geofence;
+  external GeoLoop geoloop;
 
   /// < number of elements in the array pointed to by holes
-  @ffi.Int32()
+  @ffi.Int()
   external int numHoles;
 
   /// < interior boundaries (holes) in the polygon
-  external ffi.Pointer<Geofence> holes;
+  external ffi.Pointer<GeoLoop> holes;
 }
 
-/// @struct Geofence
-/// @brief similar to GeoBoundary, but requires more alloc work
-class Geofence extends ffi.Struct {
-  @ffi.Int32()
-  external int numVerts;
+/// @struct GeoMultiPolygon
+/// @brief Simplified core of GeoJSON MultiPolygon coordinates definition
+class GeoMultiPolygon extends ffi.Struct {
+  @ffi.Int()
+  external int numPolygons;
 
-  external ffi.Pointer<GeoCoord> verts;
+  external ffi.Pointer<GeoPolygon> polygons;
+}
+
+/// Values representing polyfill containment modes, to be used in
+/// the `flags` bit field for `polygonToCellsExperimental`.
+abstract class ContainmentMode {
+  /// < Cell center is contained in the shape
+  static const int CONTAINMENT_CENTER = 0;
+
+  /// < Cell is fully contained in the shape
+  static const int CONTAINMENT_FULL = 1;
+
+  /// < Cell overlaps the shape at any point
+  static const int CONTAINMENT_OVERLAPPING = 2;
+
+  /// < Cell bounding box overlaps shape
+  static const int CONTAINMENT_OVERLAPPING_BBOX = 3;
+
+  /// < This mode is invalid and should not be used
+  static const int CONTAINMENT_INVALID = 4;
+}
+
+class LinkedLatLng extends ffi.Struct {
+  external LatLng vertex;
+
+  external ffi.Pointer<LinkedLatLng> next;
+}
+
+class LinkedGeoLoop extends ffi.Struct {
+  external ffi.Pointer<LinkedLatLng> first;
+
+  external ffi.Pointer<LinkedLatLng> last;
+
+  external ffi.Pointer<LinkedGeoLoop> next;
 }
 
 class LinkedGeoPolygon extends ffi.Struct {
@@ -1071,30 +1360,24 @@ class LinkedGeoPolygon extends ffi.Struct {
   external ffi.Pointer<LinkedGeoPolygon> next;
 }
 
-class LinkedGeoLoop extends ffi.Struct {
-  external ffi.Pointer<LinkedGeoCoord> first;
-
-  external ffi.Pointer<LinkedGeoCoord> last;
-
-  external ffi.Pointer<LinkedGeoLoop> next;
-}
-
-class LinkedGeoCoord extends ffi.Struct {
-  external GeoCoord vertex;
-
-  external ffi.Pointer<LinkedGeoCoord> next;
-}
-
 /// @struct CoordIJ
 /// @brief IJ hexagon coordinates
 ///
 /// Each axis is spaced 120 degrees apart.
 class CoordIJ extends ffi.Struct {
   /// < i component
-  @ffi.Int32()
+  @ffi.Int()
   external int i;
 
   /// < j component
-  @ffi.Int32()
+  @ffi.Int()
   external int j;
 }
+
+/// @brief Result code (success or specific error) from an H3 operation
+typedef H3Error = ffi.Uint32;
+
+/// @brief Identifier for an object (cell, edge, etc) in the H3 system.
+///
+/// The H3Index fits within a 64-bit unsigned integer.
+typedef H3Index = ffi.Uint64;

@@ -1,85 +1,98 @@
-
 name: H3C
 description: Bindings to H3
-output: 'lib/src/generated/generated_bindings.dart'
+output: "lib/src/generated/generated_bindings.dart"
 headers:
   entry-points:
-    - 'ios/Classes/h3lib/h3api.h'
+    - "c/h3lib/h3api.h"
+compiler-opts:
+  - "-isystem/usr/lib/clang/19/include"
+  - "-isystem/usr/local/include"
+  - "-isystem/usr/include"
 comments:
   style: any
   length: full
 functions:
   include:
-    - geoToH3
-    - h3ToGeo
-    - h3ToGeoBoundary
+    - isValidIndex
+    - latLngToCell
+    - cellToLatLng
+    - cellToBoundary
+    - cellToLoop
+    - loopToBoundary
+    - boundaryToLoop
     - maxKringSize
-    - hexRange
-    - hexRangeDistances
-    - hexRanges
-    - kRing
-    - kRingDistances
-    - hexRing
+    - gridDiskUnsafe
+    - gridDiskSafe
+    - gridDiskDistancesUnsafe
+    - gridDisksUnsafe
+    - gridDisk
+    - gridDiskDistances
+    - gridRingUnsafe
+    - gridRingSafe
+    - gridRing
     - maxPolyfillSize
-    - polyfill
-    - h3SetToLinkedGeo
+    - polygonToCells
+    - cellsToLinkedMultiPolygon
+    - cellsToMultiPolygon
     - destroyLinkedPolygon
     - degsToRads
     - radsToDegs
-    - pointDistRads
-    - pointDistKm
-    - pointDistM
-    - hexAreaKm2
-    - hexAreaM2
+    - greatCircleDistanceRads
+    - greatCircleDistanceKm
+    - greatCircleDistanceM
+    - getHexagonAreaAvgKm2
+    - getHexagonAreaAvgM2
     - cellAreaRads2
     - cellAreaKm2
     - cellAreaM2
+    - getHexagonEdgeLengthAvgKm
+    - getHexagonEdgeLengthAvgM
+    - edgeLengthRads
     - edgeLengthKm
     - edgeLengthM
-    - exactEdgeLengthRads
-    - exactEdgeLengthKm
-    - exactEdgeLengthM
-    - numHexagons
+    - cellAreaKm2
+    - cellAreaM2
+    - getPentagonAreaAvg
+    - getPentagonEdgeLengthAvg
+    - getNumCells
     - res0IndexCount
-    - getRes0Indexes
+    - getRes0Cells
     - pentagonIndexCount
-    - getPentagonIndexes
-    - h3GetResolution
-    - h3GetBaseCell
+    - getPentagons
+    - getResolution
+    - getBaseCellNumber
     - stringToH3
     - h3ToString
-    - h3IsValid
-    - h3ToParent
+    - isValidCell
+    - cellToParent
     - maxH3ToChildrenSize
-    - h3ToChildren
-    - h3ToCenterChild
-    - compact
+    - cellToChildren
+    - cellToCenterChild
+    - compactCells
     - maxUncompactSize
-    - uncompact
-    - h3IsResClassIII
-    - h3IsPentagon
+    - uncompactCells
+    - isResClassIII
+    - isPentagon
     - maxFaceCount
-    - h3GetFaces
-    - h3IndexesAreNeighbors
-    - getH3UnidirectionalEdge
-    - h3UnidirectionalEdgeIsValid
-    - getOriginH3IndexFromUnidirectionalEdge
-    - getDestinationH3IndexFromUnidirectionalEdge
-    - getH3IndexesFromUnidirectionalEdge
-    - getH3UnidirectionalEdgesFromHexagon
-    - getH3UnidirectionalEdgeBoundary
-    - h3Distance
+    - getIcosahedronFaces
+    - areNeighborCells
+    - cellsToDirectedEdge
+    - isValidDirectedEdge
+    - getDirectedEdgeOrigin
+    - getDirectedEdgeDestination
+    - directedEdgeToCells
+    - originToDirectedEdges
+    - destinationToDirectedEdges
+    - directedEdgeToBoundary
+    - gridDistance
     - h3LineSize
-    - h3Line
-    - experimentalH3ToLocalIj
-    - experimentalLocalIjToH3
-structs:
-  exclude:
-    - .*
+    - gridPathCells
+    - gridPathEdges
+    - getMode
+    - gridPathDirectedEdges
+    - cellToLocalIj
+    - localIjToCell
 unions:
-  exclude:
-    - .*
-enums:
   exclude:
     - .*
 unnamed-enums:

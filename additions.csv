@@ -1,0 +1,16 @@
+Category,v4 Name / Concept,Notes / Calls (v4)
+General Function Names,isValidIndex,
+General Function Names,getMode,
+Distance,gridPathEdges,
+Distance,gridPathDirectedEdges,
+Filled-In Disk Without Distances,gridDiskSafe,Calls gridDiskDistancesSafe
+Hollow Ring,gridRingSafe,Calls gridDiskDistancesSafe
+Hollow Ring,gridRing,"Calls gridRingUnsafe, gridRingSafe"
+H3 Edge Types,destinationToDirectedEdges,
+Area/Length Functions,"getPentagonAreaAvg* (e.g. Km2, M2)",
+Area/Length Functions,"getPentagonEdgeLengthAvg* (e.g. Km, M)",
+Area/Length Functions,cellAreaKm2,
+Area/Length Functions,cellAreaM2,
+Boundary/Loop Functions,cellToLoop,returns GeoLoop
+Boundary/Loop Functions,loopToBoundary,
+Boundary/Loop Functions,boundaryToLoop,

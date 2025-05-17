@@ -2,19 +2,23 @@ name: h3_flutter
 description: The package provides Flutter version of the H3 Core library, a hexagon-based geographic grid system
 version: 0.6.6
 homepage: https://github.com/festelo/h3_dart
-
+publish_to: none
 environment:
-  sdk: ">=2.14.0 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
   flutter: ">=2.5.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  h3_ffi: ^0.6.2
-  h3_web: ^0.6.1
-  h3_common: ^0.6.1
-  geojson2h3: ^0.6.1
-
+  h3_ffi: 
+    path: "../h3_ffi"
+  h3_web:
+    path: "../h3_web"
+  h3_common:
+    path: "../h3_common"
+  geojson2h3:
+    path: "../geojson2h3"
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

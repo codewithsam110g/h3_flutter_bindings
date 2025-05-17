@@ -3,26 +3,26 @@ import 'dart:ffi';
 import 'package:h3_common/h3_common.dart';
 import 'package:h3_ffi/src/generated/generated_bindings.dart' as c;
 
-extension GeoCoordToNativeMapperExtension on GeoCoordRadians {
-  /// Returns native representation of GeoCoord class
-  Pointer<c.GeoCoord> toNative(Allocator allocator) {
-    final pointer = allocator<c.GeoCoord>();
+extension LatLngToNativeMapperExtension on LatLngRadians {
+  /// Returns LatLng representation of LatLng class
+  Pointer<c.LatLng> toNative(Allocator allocator) {
+    final pointer = allocator<c.LatLng>();
     assignToNative(pointer.ref);
     return pointer;
   }
 
-  void assignToNative(c.GeoCoord ref) {
+  void assignToNative(c.LatLng ref) {
     ref.lat = lat;
-    ref.lon = lon;
+    ref.lng = lng;
   }
 }
 
-extension GeoCoordFromNativeMapperExtension on c.GeoCoord {
-  /// Returns [GeoCoord] representation of native GeoCoord class
-  GeoCoordRadians toPure() {
-    return GeoCoordRadians(
+extension LatLngFromNativeMapperExtension on c.LatLng {
+  /// Returns [LatLng] representation of native LatLng class
+  LatLngRadians toPure() {
+    return LatLngRadians(
       lat: lat,
-      lon: lon,
+      lng: lng,
     );
   }
 }

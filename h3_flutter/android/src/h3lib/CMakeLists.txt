@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.5)
 project(h3)
 
 option(BuildForTests "BuildForTests" OFF)
@@ -17,7 +17,7 @@ add_library( h3
             ${CSources}
             ${HSources})
 
-if (BuildForTests OR NOT WIN32 AND NOT ANDROID) 
+if (BuildForTests OR NOT WIN32) 
     set_target_properties(h3 PROPERTIES PREFIX "")
     set_target_properties(h3 PROPERTIES SUFFIX ".so")
 endif()

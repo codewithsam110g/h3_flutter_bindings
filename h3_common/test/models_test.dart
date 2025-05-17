@@ -17,12 +17,12 @@ void main() {
   });
 
   test('GeoCoord', () async {
-    const double latA = 13, lonA = 12;
-    const double latB = 12, lonB = 13;
-    const geoCoordConverter = GeoCoordConverter(NativeAngleConverter());
+    const double latA = 13, lngA = 12;
+    const double latB = 12, lngB = 13;
+    const latLngConverter = LatLngConverter(NativeAngleConverter());
 
-    GeoCoord buildA() => const GeoCoord(lat: latA, lon: lonA);
-    GeoCoord buildB() => const GeoCoord(lat: latB, lon: lonB);
+    LatLng buildA() => const LatLng(lat: latA, lng: lngA);
+    LatLng buildB() => const LatLng(lat: latB, lng: lngB);
     testHashCode(buildA, buildB);
     testEquals(buildA, buildB);
     expect(
@@ -32,38 +32,38 @@ void main() {
     );
     expect(
       // ignore: unrelated_type_equality_checks
-      const GeoCoord(lat: latA, lon: latA) ==
-          const GeoCoordRadians(lat: latA, lon: lonA),
+      const LatLng(lat: latA, lng: latA) ==
+          const LatLngRadians(lat: latA, lng: lngA),
       false,
       reason:
           'GeoCoord should not be equal to GeoCoordRadians if lat and lon are equal',
     );
     expect(
       // ignore: unrelated_type_equality_checks
-      buildA() == buildA().toRadians(geoCoordConverter),
+      buildA() == buildA().toRadians(latLngConverter),
       false,
       reason: 'GeoCoord should never be equal to GeoCoordRadians for safety',
     );
     expect(
-      const GeoCoord(lat: latA + 180, lon: lonA + 360),
-      const GeoCoord(lat: latA, lon: lonA),
+      const LatLng(lat: latA + 180, lng: lngA + 360),
+      const LatLng(lat: latA, lng: lngA),
       reason: 'World-Wrapping +',
     );
     expect(
-      const GeoCoord(lat: latA - 180, lon: lonA - 360),
-      const GeoCoord(lat: latA, lon: lonA),
+      const LatLng(lat: latA - 180, lng: lngA - 360),
+      const LatLng(lat: latA, lng: lngA),
       reason: 'World-Wrapping -',
     );
   });
 
-  test('GeoCoordRadians', () async {
-    const latA = 0.3 * pi, lonA = 0.2 * pi;
-    const latB = 0.2 * pi, lonB = 0.3 * pi;
-    const geoCoordConverter = GeoCoordConverter(NativeAngleConverter());
+  test('LatLngRadians', () async {
+    const latA = 0.3 * pi, lngA = 0.2 * pi;
+    const latB = 0.2 * pi, lngB = 0.3 * pi;
+    const latLngConverter = LatLngConverter(NativeAngleConverter());
 
-    GeoCoordRadians buildA() => const GeoCoordRadians(lat: latA, lon: lonA);
-    GeoCoordRadians buildB() =>
-        const GeoCoordRadians(lat: latB * pi, lon: lonB);
+    LatLngRadians buildA() => const LatLngRadians(lat: latA, lng: lngA);
+    LatLngRadians buildB() =>
+        const LatLngRadians(lat: latB * pi, lng: lngB);
 
     testHashCode(buildA, buildB);
     testEquals(buildA, buildB);
@@ -76,26 +76,26 @@ void main() {
     );
     expect(
       // ignore: unrelated_type_equality_checks
-      const GeoCoordRadians(lat: latA, lon: latA) ==
-          const GeoCoord(lat: latA, lon: lonA),
+      const LatLngRadians(lat: latA, lng: latA) ==
+          const LatLng(lat: latA, lng: lngA),
       false,
       reason:
           'GeoCoordRadians should not be equal to GeoCoord if lat and lon are equal',
     );
     expect(
       // ignore: unrelated_type_equality_checks
-      buildA() == buildA().toDegrees(geoCoordConverter),
+      buildA() == buildA().toDegrees(latLngConverter),
       false,
       reason: 'GeoCoordRadians should never be equal to GeoCoord for safety',
     );
     expect(
-      const GeoCoordRadians(lat: latA + pi, lon: lonA + 2 * pi),
-      const GeoCoordRadians(lat: latA, lon: lonA),
+      const LatLngRadians(lat: latA + pi, lng: lngA + 2 * pi),
+      const LatLngRadians(lat: latA, lng: lngA),
       reason: 'World-Wrapping +',
     );
     expect(
-      const GeoCoordRadians(lat: latA - pi, lon: lonA - 2 * pi),
-      const GeoCoordRadians(lat: latA, lon: lonA),
+      const LatLngRadians(lat: latA - pi, lng: lngA - 2 * pi),
+      const LatLngRadians(lat: latA, lng: lngA),
       reason: 'World-Wrapping -',
     );
   });

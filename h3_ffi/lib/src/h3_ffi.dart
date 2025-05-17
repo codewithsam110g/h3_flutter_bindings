@@ -14,27 +14,27 @@ class H3Ffi implements H3 {
 
   final c.H3C _h3c;
 
-  late final GeoCoordConverter _geoCoordConverter =
-      GeoCoordConverter(H3AngleConverter(this));
+  late final LatLngConverter _latLngConverter =
+      LatLngConverter(H3AngleConverter(this));
 
   /// Determines if [h3Index] is a valid cell (hexagon or pentagon)
   @override
-  bool h3IsValid(BigInt h3Index) {
-    return _h3c.h3IsValid(h3Index.toInt()) == 1;
+  bool isValidCell(BigInt h3Index) {
+    return _h3c.isValidCell(h3Index.toInt()) == 1;
   }
 
   /// Determines if [h3Index] is a valid pentagon
   @override
-  bool h3IsPentagon(BigInt h3Index) {
-    return _h3c.h3IsPentagon(h3Index.toInt()) == 1;
+  bool isPentagon(BigInt h3Index) {
+    return _h3c.isPentagon(h3Index.toInt()) == 1;
   }
 
   /// Determines if [h3Index] is Class III (rotated versus
   /// the icosahedron and subject to shape distortion adding extra points on
   /// icosahedron edges, making them not true hexagons).
   @override
-  bool h3IsResClassIII(BigInt h3Index) {
-    return _h3c.h3IsResClassIII(h3Index.toInt()) == 1;
+  bool isResClassIII(BigInt h3Index) {
+    return _h3c.isResClassIII(h3Index.toInt()) == 1;
   }
 
   /// Returns the base cell "number" (0 to 121) of the provided H3 cell
@@ -42,18 +42,18 @@ class H3Ffi implements H3 {
   /// Note: Technically works on H3 edges, but will return base cell of the
   /// origin cell.
   @override
-  int h3GetBaseCell(BigInt h3Index) {
-    return _h3c.h3GetBaseCell(h3Index.toInt());
+  int getBaseCellNumber(BigInt h3Index) {
+    return _h3c.getBaseCellNumber(h3Index.toInt());
   }
 
   /// Find all icosahedron faces intersected by a given H3 index
   @override
-  List<int> h3GetFaces(BigInt h3Index) {
+  List<int> getIcosahedronFaces(BigInt h3Index) {
     final h3IndexInt = h3Index.toInt();
     return using((arena) {
       final size = _h3c.maxFaceCount(h3IndexInt);
       final out = arena<Int32>(size);
-      _h3c.h3GetFaces(h3IndexInt, out);
+      _h3c.getIcosahedronFaces(h3IndexInt, out);
       return out.asTypedList(size).where((e) => e != -1).toList();
     });
   }
@@ -62,21 +62,21 @@ class H3Ffi implements H3 {
   ///
   /// Works on both cells and unidirectional edges.
   @override
-  int h3GetResolution(BigInt h3Index) {
-    if (!h3IsValid(h3Index)) {
+  int getResolution(BigInt h3Index) {
+    if (!isValidCell(h3Index)) {
       throw H3Exception('H3Index is not valid.');
     }
-    return _h3c.h3GetResolution(h3Index.toInt());
+    return _h3c.getResolution(h3Index.toInt());
   }
 
   /// Find the H3 index of the resolution res cell containing the lat/lng
   @override
-  BigInt geoToH3(GeoCoord geoCoord, int res) {
+  BigInt latLngToCell(LatLng latLng, int res) {
     assert(res >= 0 && res < 16, 'Resolution must be in [0, 15] range');
     return using((arena) {
       return _h3c
-          .geoToH3(
-            geoCoord.toRadians(_geoCoordConverter).toNative(arena),
+          .latLngToCell(
+            latLng.toRadians(_latLngConverter).toNative(arena),
             res,
           )
           .toBigInt();
@@ -85,12 +85,12 @@ class H3Ffi implements H3 {
 
   /// Find the lat/lon center point g of the cell h3
   @override
-  GeoCoord h3ToGeo(BigInt h3Index) {
+  LatLng cellToLatLng(BigInt h3Index) {
     return using((arena) {
-      final geoCoordNative = arena<c.GeoCoord>();
+      final latLngNative = arena<c.LatLng>();
 
-      _h3c.h3ToGeo(h3Index.toInt(), geoCoordNative);
-      return geoCoordNative.ref.toPure().toDegrees(_geoCoordConverter);
+      _h3c.cellToLatLng(h3Index.toInt(), latLngNative);
+      return latLngNative.ref.toPure().toDegrees(_latLngConverter);
     });
   }
 
@@ -101,14 +101,14 @@ class H3Ffi implements H3 {
   /// h3.h3ToGeoBoundary(133)
   /// ```
   @override
-  List<GeoCoord> h3ToGeoBoundary(BigInt h3Index) {
+  List<LatLng> cellToBoundary(BigInt h3Index) {
     return using((arena) {
-      final geoBoundary = arena<c.GeoBoundary>();
-      _h3c.h3ToGeoBoundary(h3Index.toInt(), geoBoundary);
-      final res = <GeoCoord>[];
+      final geoBoundary = arena<c.CellBoundary>();
+      _h3c.cellToBoundary(h3Index.toInt(), geoBoundary);
+      final res = <LatLng>[];
       for (var i = 0; i < geoBoundary.ref.numVerts; i++) {
         final vert = geoBoundary.ref.verts[i];
-        res.add(GeoCoord(lon: radsToDegs(vert.lon), lat: radsToDegs(vert.lat)));
+        res.add(LatLng(lng: radsToDegs(vert.lng), lat: radsToDegs(vert.lat)));
       }
       return res;
     });
@@ -118,23 +118,23 @@ class H3Ffi implements H3 {
   ///
   /// Returns 0 when result can't be calculated
   @override
-  BigInt h3ToParent(BigInt h3Index, int resolution) {
-    return _h3c.h3ToParent(h3Index.toInt(), resolution).toBigInt();
+  BigInt cellToParent(BigInt h3Index, int resolution) {
+    return _h3c.cellToParent(h3Index.toInt(), resolution).toBigInt();
   }
 
   /// Get the children/descendents of the given [h3Index] hexagon at a particular [resolution]
   @override
-  List<BigInt> h3ToChildren(BigInt h3Index, int resolution) {
+  List<BigInt> cellToChildren(BigInt h3Index, int resolution) {
     // Bad input in this case can potentially result in high computation volume
     // using the current C algorithm. Validate and return an empty array on failure.
-    if (!h3IsValid(h3Index)) {
+    if (!isValidCell(h3Index)) {
       return [];
     }
     final h3IndexInt = h3Index.toInt();
     final maxSize = _h3c.maxH3ToChildrenSize(h3IndexInt, resolution);
     return using((arena) {
       final out = arena<Uint64>(maxSize);
-      _h3c.h3ToChildren(h3IndexInt, resolution, out);
+      _h3c.cellToChildren(h3IndexInt, resolution, out);
       final list = out.asTypedList(maxSize).toList();
       return list.where((e) => e != 0).map((e) => e.toBigInt()).toList();
     });
@@ -144,17 +144,17 @@ class H3Ffi implements H3 {
   ///
   /// Returns 0 when result can't be calculated
   @override
-  BigInt h3ToCenterChild(BigInt h3Index, int resolution) {
-    return _h3c.h3ToCenterChild(h3Index.toInt(), resolution).toBigInt();
+  BigInt cellToCenterChild(BigInt h3Index, int resolution) {
+    return _h3c.cellToCenterChild(h3Index.toInt(), resolution).toBigInt();
   }
 
   /// Maximum number of hexagons in k-ring
   @override
-  List<BigInt> kRing(BigInt h3Index, int ringSize) {
+  List<BigInt> gridDisk(BigInt h3Index, int ringSize) {
     return using((arena) {
       final kIndex = _h3c.maxKringSize(ringSize);
       final out = arena<Uint64>(kIndex);
-      _h3c.kRing(h3Index.toInt(), ringSize, out);
+      _h3c.gridDisk(h3Index.toInt(), ringSize, out);
       final list = out.asTypedList(kIndex).toList();
       return list.where((e) => e != 0).map((e) => e.toBigInt()).toList();
     });
@@ -162,13 +162,13 @@ class H3Ffi implements H3 {
 
   /// Hollow hexagon ring at some origin
   @override
-  List<BigInt> hexRing(BigInt h3Index, int ringSize) {
+  List<BigInt> gridRingUnsafe(BigInt h3Index, int ringSize) {
     return using((arena) {
       final kIndex = ringSize == 0 ? 1 : 6 * ringSize;
       final out = arena<Uint64>(kIndex);
-      final resultCode = _h3c.hexRing(h3Index.toInt(), ringSize, out);
+      final resultCode = _h3c.gridRingUnsafe(h3Index.toInt(), ringSize, out);
       if (resultCode != 0) {
-        throw H3Exception('Failed to get hexRing (encountered a pentagon?)');
+        throw H3Exception('Failed to get gridRingUnsafe (encountered a pentagon?)');
       }
       final list = out.asTypedList(kIndex).toList();
       return list.where((e) => e != 0).map((e) => e.toBigInt()).toList();
@@ -199,62 +199,62 @@ class H3Ffi implements H3 {
   /// )
   /// ```
   @override
-  List<BigInt> polyfill({
-    required List<GeoCoord> coordinates,
+  List<BigInt> polygonToCells({
+    required List<LatLng> coordinates,
     required int resolution,
-    List<List<GeoCoord>> holes = const [],
+    List<List<LatLng>> holes = const [],
   }) {
     assert(resolution >= 0 && resolution < 16,
         'Resolution must be in [0, 15] range');
     return using((arena) {
       // polygon outer boundary
-      final nativeCoordinatesPointer = arena<c.GeoCoord>(coordinates.length);
+      final nativeCoordinatesPointer = arena<c.LatLng>(coordinates.length);
       for (var i = 0; i < coordinates.length; i++) {
-        final pointer = Pointer<c.GeoCoord>.fromAddress(
-          nativeCoordinatesPointer.address + sizeOf<c.GeoCoord>() * i,
+        final pointer = Pointer<c.LatLng>.fromAddress(
+          nativeCoordinatesPointer.address + sizeOf<c.LatLng>() * i,
         );
         coordinates[i]
-            .toRadians(_geoCoordConverter)
+            .toRadians(_latLngConverter)
             .assignToNative(pointer.ref);
       }
 
       final polygon = arena<c.GeoPolygon>();
-      final outergeofence = arena<c.Geofence>();
+      final outergeoloop = arena<c.GeoLoop>();
 
       // outer boundary
-      polygon.ref.geofence = outergeofence.ref;
-      polygon.ref.geofence.verts = nativeCoordinatesPointer;
-      polygon.ref.geofence.numVerts = coordinates.length;
+      polygon.ref.geoloop = outergeoloop.ref;
+      polygon.ref.geoloop.verts = nativeCoordinatesPointer;
+      polygon.ref.geoloop.numVerts = coordinates.length;
 
       // polygon holes
       if (holes.isNotEmpty) {
-        final holesgeofencePointer = arena<c.Geofence>(holes.length);
+        final holesgeoloopPointer = arena<c.GeoLoop>(holes.length);
         for (var h = 0; h < holes.length; h++) {
           final holeCoords = holes[h];
 
-          final singleHoleGFencePointer = Pointer<c.Geofence>.fromAddress(
-            holesgeofencePointer.address + sizeOf<c.Geofence>() * h,
+          final singleHoleGLoopPointer = Pointer<c.GeoLoop>.fromAddress(
+            holesgeoloopPointer.address + sizeOf<c.GeoLoop>() * h,
           );
 
           final holeNativeCoordinatesPointer =
-              arena<c.GeoCoord>(holeCoords.length);
+              arena<c.LatLng>(holeCoords.length);
 
           // assign the hole coord to holeptr
           for (var i = 0; i < holeCoords.length; i++) {
-            final coordPointer = Pointer<c.GeoCoord>.fromAddress(
+            final coordPointer = Pointer<c.LatLng>.fromAddress(
                 holeNativeCoordinatesPointer.address +
-                    sizeOf<c.GeoCoord>() * i);
+                    sizeOf<c.LatLng>() * i);
             holeCoords[i]
-                .toRadians(_geoCoordConverter)
+                .toRadians(_latLngConverter)
                 .assignToNative(coordPointer.ref);
           }
 
-          singleHoleGFencePointer.ref.numVerts = holeCoords.length;
-          singleHoleGFencePointer.ref.verts = holeNativeCoordinatesPointer;
+          singleHoleGLoopPointer.ref.numVerts = holeCoords.length;
+          singleHoleGLoopPointer.ref.verts = holeNativeCoordinatesPointer;
         }
 
         polygon.ref.numHoles = holes.length;
-        polygon.ref.holes = holesgeofencePointer;
+        polygon.ref.holes = holesgeoloopPointer;
       } else {
         polygon.ref.numHoles = 0;
         polygon.ref.holes = Pointer.fromAddress(0);
@@ -263,7 +263,7 @@ class H3Ffi implements H3 {
       final nbIndex = _h3c.maxPolyfillSize(polygon, resolution);
 
       final out = arena<Uint64>(nbIndex);
-      _h3c.polyfill(polygon, resolution, out);
+      _h3c.polygonToCells(polygon, resolution, out);
       final list = out.asTypedList(nbIndex).toList();
       return list.where((e) => e != 0).map((e) => e.toBigInt()).toList();
     });
@@ -272,7 +272,7 @@ class H3Ffi implements H3 {
   /// Compact a set of hexagons of the same resolution into a set of hexagons
   /// across multiple levels that represents the same area.
   @override
-  List<BigInt> compact(List<BigInt> hexagons) {
+  List<BigInt> compactCells(List<BigInt> hexagons) {
     return using((arena) {
       hexagons = hexagons.toSet().toList(); // remove duplicates
       final hexagonsPointer = arena<Uint64>(hexagons.length);
@@ -284,7 +284,7 @@ class H3Ffi implements H3 {
       }
 
       final out = arena<Uint64>(hexagons.length);
-      final resultCode = _h3c.compact(hexagonsPointer, out, hexagons.length);
+      final resultCode = _h3c.compactCells(hexagonsPointer, out, hexagons.length);
       if (resultCode != 0) {
         throw H3Exception(
           'Failed to compact, malformed input data',
@@ -297,7 +297,7 @@ class H3Ffi implements H3 {
 
   /// Uncompact a compacted set of hexagons to hexagons of the same resolution
   @override
-  List<BigInt> uncompact(
+  List<BigInt> uncompactCells(
     List<BigInt> compactedHexagons, {
     required int resolution,
   }) {
@@ -324,7 +324,7 @@ class H3Ffi implements H3 {
       }
 
       final out = arena<Uint64>(maxUncompactSize);
-      final resultCode = _h3c.uncompact(
+      final resultCode = _h3c.uncompactCells(
         compactedHexagonsPointer,
         compactedHexagons.length,
         out,
@@ -342,8 +342,8 @@ class H3Ffi implements H3 {
 
   /// Returns whether or not two H3 indexes are neighbors (share an edge)
   @override
-  bool h3IndexesAreNeighbors(BigInt origin, BigInt destination) {
-    return _h3c.h3IndexesAreNeighbors(origin.toInt(), destination.toInt()) == 1;
+  bool areNeighborCells(BigInt origin, BigInt destination) {
+    return _h3c.areNeighborCells(origin.toInt(), destination.toInt()) == 1;
   }
 
   /// Get an H3 index representing a unidirectional edge for a given origin and
@@ -351,9 +351,9 @@ class H3Ffi implements H3 {
   ///
   /// Returns 0 when result can't be calculated
   @override
-  BigInt getH3UnidirectionalEdge(BigInt origin, BigInt destination) {
+  BigInt cellsToDirectedEdge(BigInt origin, BigInt destination) {
     return _h3c
-        .getH3UnidirectionalEdge(origin.toInt(), destination.toInt())
+        .cellsToDirectedEdge(origin.toInt(), destination.toInt())
         .toBigInt();
   }
 
@@ -361,9 +361,9 @@ class H3Ffi implements H3 {
   ///
   /// Returns 0 when result can't be calculated
   @override
-  BigInt getOriginH3IndexFromUnidirectionalEdge(BigInt edgeIndex) {
+  BigInt getDirectedEdgeOrigin(BigInt edgeIndex) {
     return _h3c
-        .getOriginH3IndexFromUnidirectionalEdge(edgeIndex.toInt())
+        .getDirectedEdgeOrigin(edgeIndex.toInt())
         .toBigInt();
   }
 
@@ -371,24 +371,24 @@ class H3Ffi implements H3 {
   ///
   /// Returns 0 when result can't be calculated
   @override
-  BigInt getDestinationH3IndexFromUnidirectionalEdge(BigInt edgeIndex) {
+  BigInt getDirectedEdgeDestination(BigInt edgeIndex) {
     return _h3c
-        .getDestinationH3IndexFromUnidirectionalEdge(edgeIndex.toInt())
+        .getDirectedEdgeDestination(edgeIndex.toInt())
         .toBigInt();
   }
 
   /// Returns whether or not the input is a valid unidirectional edge
   @override
-  bool h3UnidirectionalEdgeIsValid(BigInt edgeIndex) {
-    return _h3c.h3UnidirectionalEdgeIsValid(edgeIndex.toInt()) == 1;
+  bool isValidDirectedEdge(BigInt edgeIndex) {
+    return _h3c.isValidDirectedEdge(edgeIndex.toInt()) == 1;
   }
 
   /// Get the [origin, destination] pair represented by a unidirectional edge
   @override
-  List<BigInt> getH3IndexesFromUnidirectionalEdge(BigInt edgeIndex) {
+  List<BigInt> directedEdgeToCells(BigInt edgeIndex) {
     return using((arena) {
       final out = arena<Uint64>(2);
-      _h3c.getH3IndexesFromUnidirectionalEdge(edgeIndex.toInt(), out);
+      _h3c.directedEdgeToCells(edgeIndex.toInt(), out);
       return out.asTypedList(2).map((e) => e.toBigInt()).toList();
     });
   }
@@ -396,10 +396,10 @@ class H3Ffi implements H3 {
   /// Get all of the unidirectional edges with the given H3 index as the origin
   /// (i.e. an edge to every neighbor)
   @override
-  List<BigInt> getH3UnidirectionalEdgesFromHexagon(BigInt edgeIndex) {
+  List<BigInt> originToDirectedEdges(BigInt edgeIndex) {
     return using((arena) {
       final out = arena<Uint64>(6);
-      _h3c.getH3UnidirectionalEdgesFromHexagon(edgeIndex.toInt(), out);
+      _h3c.originToDirectedEdges(edgeIndex.toInt(), out);
       return out
           .asTypedList(6)
           .toList()
@@ -413,14 +413,14 @@ class H3Ffi implements H3 {
   /// that for edges that cross the edge of an icosahedron face, this may return
   /// 3 coordinates.
   @override
-  List<GeoCoord> getH3UnidirectionalEdgeBoundary(BigInt edgeIndex) {
+  List<LatLng> directedEdgeToBoundary(BigInt edgeIndex) {
     return using((arena) {
-      final out = arena<c.GeoBoundary>();
-      _h3c.getH3UnidirectionalEdgeBoundary(edgeIndex.toInt(), out);
-      final coordinates = <GeoCoord>[];
+      final out = arena<c.CellBoundary>();
+      _h3c.directedEdgeToBoundary(edgeIndex.toInt(), out);
+      final coordinates = <LatLng>[];
       for (var i = 0; i < out.ref.numVerts; i++) {
         coordinates
-            .add(out.ref.verts[i].toPure().toDegrees(_geoCoordConverter));
+            .add(out.ref.verts[i].toPure().toDegrees(_latLngConverter));
       }
       return coordinates;
     });
@@ -432,8 +432,8 @@ class H3Ffi implements H3 {
   ///
   /// Returns -1 when result can't be calculated
   @override
-  int h3Distance(BigInt origin, BigInt destination) {
-    return _h3c.h3Distance(origin.toInt(), destination.toInt());
+  int gridDistance(BigInt origin, BigInt destination) {
+    return _h3c.gridDistance(origin.toInt(), destination.toInt());
   }
 
   /// Given two H3 indexes, return the line of indexes between them (inclusive).
@@ -451,14 +451,14 @@ class H3Ffi implements H3 {
   ///  - Lines are drawn in grid space, and may not correspond exactly to either
   ///    Cartesian lines or great arcs.
   @override
-  List<BigInt> h3Line(BigInt origin, BigInt destination) {
+  List<BigInt> gridPathCells(BigInt origin, BigInt destination) {
     final originInt = origin.toInt();
     final destinationInt = destination.toInt();
     return using((arena) {
       final size = _h3c.h3LineSize(originInt, destinationInt);
       if (size < 0) throw H3Exception('Line cannot be calculated');
       final out = arena<Uint64>(size);
-      final resultCode = _h3c.h3Line(originInt, destinationInt, out);
+      final resultCode = _h3c.gridPathCells(originInt, destinationInt, out);
       if (resultCode != 0) throw H3Exception('Line cannot be calculated');
       final list = out.asTypedList(size).toList();
       return list.where((e) => e != 0).map((e) => e.toBigInt()).toList();
@@ -476,12 +476,13 @@ class H3Ffi implements H3 {
   /// - This function is experimental, and its output is not guaranteed
   /// to be compatible across different versions of H3.
   @override
-  CoordIJ experimentalH3ToLocalIj(BigInt origin, BigInt destination) {
+  CoordIJ cellToLocalIj(BigInt origin, BigInt destination) {
     return using((arena) {
       final out = arena<c.CoordIJ>();
-      final resultCode = _h3c.experimentalH3ToLocalIj(
+      final resultCode = _h3c.cellToLocalIj(
         origin.toInt(),
         destination.toInt(),
+        param_missing_mode,
         out,
       );
 
@@ -518,12 +519,13 @@ class H3Ffi implements H3 {
   /// - This function is experimental, and its output is not guaranteed
   /// to be compatible across different versions of H3.
   @override
-  BigInt experimentalLocalIjToH3(BigInt origin, CoordIJ coordinates) {
+  BigInt localIjToCell(BigInt origin, CoordIJ coordinates) {
     return using((arena) {
       final out = arena<Uint64>();
-      final resultCode = _h3c.experimentalLocalIjToH3(
+      final resultCode = _h3c.localIjToCell(
         origin.toInt(),
         coordinates.toNative(arena),
+        param_mode_missing,
         out,
       );
       if (resultCode != 0) {
@@ -539,23 +541,23 @@ class H3Ffi implements H3 {
 
   /// Calculates great circle distance between two geo points.
   @override
-  double pointDist(GeoCoord a, GeoCoord b, H3Units unit) {
+  double greatCircleDistance(LatLng a, LatLng b, H3Units unit) {
     return using((arena) {
       switch (unit) {
         case H3Units.m:
-          return _h3c.pointDistM(
-            a.toRadians(_geoCoordConverter).toNative(arena),
-            b.toRadians(_geoCoordConverter).toNative(arena),
+          return _h3c.greatCircleDistanceM(
+            a.toRadians(_latLngConverter).toNative(arena),
+            b.toRadians(_latLngConverter).toNative(arena),
           );
         case H3Units.km:
-          return _h3c.pointDistKm(
-            a.toRadians(_geoCoordConverter).toNative(arena),
-            b.toRadians(_geoCoordConverter).toNative(arena),
+          return _h3c.greatCircleDistanceKm(
+            a.toRadians(_latLngConverter).toNative(arena),
+            b.toRadians(_latLngConverter).toNative(arena),
           );
         case H3Units.rad:
-          return _h3c.pointDistRads(
-            a.toRadians(_geoCoordConverter).toNative(arena),
-            b.toRadians(_geoCoordConverter).toNative(arena),
+          return _h3c.greatCircleDistanceRads(
+            a.toRadians(_latLngConverter).toNative(arena),
+            b.toRadians(_latLngConverter).toNative(arena),
           );
       }
     });
@@ -576,38 +578,38 @@ class H3Ffi implements H3 {
 
   /// Calculates exact length of a given unidirectional edge in [unit]s
   @override
-  double exactEdgeLength(BigInt edgeIndex, H3Units unit) {
+  double edgeLength(BigInt edgeIndex, H3Units unit) {
     switch (unit) {
       case H3Units.m:
-        return _h3c.exactEdgeLengthM(edgeIndex.toInt());
+        return _h3c.edgeLengthM(edgeIndex.toInt());
       case H3Units.km:
-        return _h3c.exactEdgeLengthKm(edgeIndex.toInt());
+        return _h3c.edgeLengthKm(edgeIndex.toInt());
       case H3Units.rad:
-        return _h3c.exactEdgeLengthRads(edgeIndex.toInt());
+        return _h3c.edgeLengthRads(edgeIndex.toInt());
     }
   }
 
   /// Calculates average hexagon area at a given resolution in [unit]s
   @override
-  double hexArea(int res, H3AreaUnits unit) {
+  double getHexagonAreaAvg(int res, H3AreaUnits unit) {
     assert(res >= 0 && res < 16, 'Resolution must be in [0, 15] range');
     switch (unit) {
       case H3AreaUnits.m2:
-        return _h3c.hexAreaM2(res);
+        return _h3c.getHexagonAreaAvgM2(res);
       case H3AreaUnits.km2:
-        return _h3c.hexAreaKm2(res);
+        return _h3c.getHexagonAreaAvgKm2(res);
     }
   }
 
   /// Calculates average hexagon edge length at a given resolution in [unit]s
   @override
-  double edgeLength(int res, H3EdgeLengthUnits unit) {
+  double getHexagonEdgeLengthAvg(int res, H3EdgeLengthUnits unit) {
     assert(res >= 0 && res < 16, 'Resolution must be in [0, 15] range');
     switch (unit) {
       case H3EdgeLengthUnits.m:
-        return _h3c.edgeLengthM(res);
+        return _h3c.getHexagonEdgeLengthAvgM(res);
       case H3EdgeLengthUnits.km:
-        return _h3c.edgeLengthKm(res);
+        return _h3c.getHexagonEdgeLengthAvgKm(res);
     }
   }
 
@@ -617,32 +619,32 @@ class H3Ffi implements H3 {
   /// resolution 8 the exact count cannot be represented in a JavaScript 32-bit number,
   /// so consumers should use caution when applying further operations to the output.
   @override
-  int numHexagons(int res) {
+  int getNumCells(int res) {
     assert(res >= 0 && res < 16, 'Resolution must be in [0, 15] range');
-    return _h3c.numHexagons(res);
+    return _h3c.getNumCells(res);
   }
 
   /// Returns all H3 indexes at resolution 0. As every index at every resolution > 0 is
   /// the descendant of a res 0 index, this can be used with h3ToChildren to iterate
   /// over H3 indexes at any resolution.
   @override
-  List<BigInt> getRes0Indexes() {
+  List<BigInt> getRes0Cells() {
     return using((arena) {
       final size = _h3c.res0IndexCount();
       final out = arena<Uint64>(size);
-      _h3c.getRes0Indexes(out);
+      _h3c.getRes0Cells(out);
       return out.asTypedList(size).map((e) => e.toBigInt()).toList();
     });
   }
 
   /// Get the twelve pentagon indexes at a given resolution.
   @override
-  List<BigInt> getPentagonIndexes(int res) {
+  List<BigInt> getPentagons(int res) {
     assert(res >= 0 && res < 16, 'Resolution must be in [0, 15] range');
     return using((arena) {
       final size = _h3c.pentagonIndexCount();
       final out = arena<Uint64>(size);
-      _h3c.getPentagonIndexes(res, out);
+      _h3c.getPentagons(res, out);
       return out.asTypedList(size).map((e) => e.toBigInt()).toList();
     });
   }
