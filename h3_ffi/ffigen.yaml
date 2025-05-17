@@ -20,7 +20,7 @@ functions:
     - cellToLoop
     - loopToBoundary
     - boundaryToLoop
-    - maxKringSize
+    - maxGridDiskSize
     - gridDiskUnsafe
     - gridDiskSafe
     - gridDiskDistancesUnsafe
@@ -30,7 +30,7 @@ functions:
     - gridRingUnsafe
     - gridRingSafe
     - gridRing
-    - maxPolyfillSize
+    - maxPolygonToCellsSize
     - polygonToCells
     - cellsToLinkedMultiPolygon
     - cellsToMultiPolygon
@@ -50,14 +50,12 @@ functions:
     - edgeLengthRads
     - edgeLengthKm
     - edgeLengthM
-    - cellAreaKm2
-    - cellAreaM2
     - getPentagonAreaAvg
     - getPentagonEdgeLengthAvg
     - getNumCells
-    - res0IndexCount
+    - res0CellCount
     - getRes0Cells
-    - pentagonIndexCount
+    - pentagonCount
     - getPentagons
     - getResolution
     - getBaseCellNumber
@@ -65,11 +63,11 @@ functions:
     - h3ToString
     - isValidCell
     - cellToParent
-    - maxH3ToChildrenSize
+    - cellToChildrenSize
     - cellToChildren
     - cellToCenterChild
     - compactCells
-    - maxUncompactSize
+    - uncompactCellsSize
     - uncompactCells
     - isResClassIII
     - isPentagon
@@ -85,7 +83,7 @@ functions:
     - destinationToDirectedEdges
     - directedEdgeToBoundary
     - gridDistance
-    - h3LineSize
+    - gridPathCellsSize
     - gridPathCells
     - gridPathEdges
     - getMode

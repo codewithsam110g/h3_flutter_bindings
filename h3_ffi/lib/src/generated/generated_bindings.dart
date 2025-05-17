@@ -85,6 +85,28 @@ class H3C {
   late final _cellToBoundary = _cellToBoundaryPtr
       .asFunction<int Function(int, ffi.Pointer<CellBoundary>)>();
 
+  /// @defgroup gridDisk gridDisk
+  /// Functions for gridDisk
+  /// @{
+  /// /
+  /// /** @brief maximum number of hexagons in k-ring
+  int maxGridDiskSize(
+    int k,
+    ffi.Pointer<ffi.Int64> out,
+  ) {
+    return _maxGridDiskSize(
+      k,
+      out,
+    );
+  }
+
+  late final _maxGridDiskSizePtr = _lookup<
+          ffi
+          .NativeFunction<H3Error Function(ffi.Int, ffi.Pointer<ffi.Int64>)>>(
+      'maxGridDiskSize');
+  late final _maxGridDiskSize = _maxGridDiskSizePtr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Int64>)>();
+
   /// @brief hexagons neighbors in all directions, assuming no pentagons
   int gridDiskUnsafe(
     int origin,
@@ -219,6 +241,33 @@ class H3C {
               H3Index, ffi.Int, ffi.Pointer<H3Index>)>>('gridRingUnsafe');
   late final _gridRingUnsafe = _gridRingUnsafePtr
       .asFunction<int Function(int, int, ffi.Pointer<H3Index>)>();
+
+  /// @defgroup polygonToCells polygonToCells
+  /// Functions for polygonToCells
+  /// @{
+  /// /
+  /// /** @brief maximum number of cells that could be in the polygon
+  int maxPolygonToCellsSize(
+    ffi.Pointer<GeoPolygon> geoPolygon,
+    int res,
+    int flags,
+    ffi.Pointer<ffi.Int64> out,
+  ) {
+    return _maxPolygonToCellsSize(
+      geoPolygon,
+      res,
+      flags,
+      out,
+    );
+  }
+
+  late final _maxPolygonToCellsSizePtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(ffi.Pointer<GeoPolygon>, ffi.Int, ffi.Uint32,
+              ffi.Pointer<ffi.Int64>)>>('maxPolygonToCellsSize');
+  late final _maxPolygonToCellsSize = _maxPolygonToCellsSizePtr.asFunction<
+      int Function(
+          ffi.Pointer<GeoPolygon>, int, int, ffi.Pointer<ffi.Int64>)>();
 
   /// @brief cells within the given polygon
   int polygonToCells(
@@ -615,6 +664,19 @@ class H3C {
   late final _getNumCells =
       _getNumCellsPtr.asFunction<int Function(int, ffi.Pointer<ffi.Int64>)>();
 
+  /// @defgroup getRes0Cells getRes0Cells
+  /// Functions for getRes0Cells
+  /// @{
+  /// /
+  /// /** @brief returns the number of resolution 0 cells (hexagons and pentagons)
+  int res0CellCount() {
+    return _res0CellCount();
+  }
+
+  late final _res0CellCountPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>('res0CellCount');
+  late final _res0CellCount = _res0CellCountPtr.asFunction<int Function()>();
+
   /// @brief provides all base cells in H3Index format
   int getRes0Cells(
     ffi.Pointer<H3Index> out,
@@ -629,6 +691,19 @@ class H3C {
           'getRes0Cells');
   late final _getRes0Cells =
       _getRes0CellsPtr.asFunction<int Function(ffi.Pointer<H3Index>)>();
+
+  /// @defgroup getPentagons getPentagons
+  /// Functions for getPentagons
+  /// @{
+  /// /
+  /// /** @brief returns the number of pentagons per resolution
+  int pentagonCount() {
+    return _pentagonCount();
+  }
+
+  late final _pentagonCountPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>('pentagonCount');
+  late final _pentagonCount = _pentagonCountPtr.asFunction<int Function()>();
 
   /// @brief generates all pentagons at the specified resolution
   int getPentagons(
@@ -775,6 +850,31 @@ class H3C {
   late final _cellToParent = _cellToParentPtr
       .asFunction<int Function(int, int, ffi.Pointer<H3Index>)>();
 
+  /// @defgroup cellToChildren cellToChildren
+  /// Functions for cellToChildren
+  /// @{
+  /// /
+  /// /** @brief determines the exact number of children (or grandchildren, etc)
+  /// that would be returned for the given cell
+  int cellToChildrenSize(
+    int h,
+    int childRes,
+    ffi.Pointer<ffi.Int64> out,
+  ) {
+    return _cellToChildrenSize(
+      h,
+      childRes,
+      out,
+    );
+  }
+
+  late final _cellToChildrenSizePtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(
+              H3Index, ffi.Int, ffi.Pointer<ffi.Int64>)>>('cellToChildrenSize');
+  late final _cellToChildrenSize = _cellToChildrenSizePtr
+      .asFunction<int Function(int, int, ffi.Pointer<ffi.Int64>)>();
+
   /// @brief provides the children (or grandchildren, etc) of the given cell
   int cellToChildren(
     int h,
@@ -843,6 +943,33 @@ class H3C {
               ffi.Int64)>>('compactCells');
   late final _compactCells = _compactCellsPtr.asFunction<
       int Function(ffi.Pointer<H3Index>, ffi.Pointer<H3Index>, int)>();
+
+  /// @defgroup uncompactCells uncompactCells
+  /// Functions for uncompactCells
+  /// @{
+  /// /
+  /// /** @brief determines the exact number of hexagons that will be uncompacted
+  /// from the compacted set
+  int uncompactCellsSize(
+    ffi.Pointer<H3Index> compactedSet,
+    int numCompacted,
+    int res,
+    ffi.Pointer<ffi.Int64> out,
+  ) {
+    return _uncompactCellsSize(
+      compactedSet,
+      numCompacted,
+      res,
+      out,
+    );
+  }
+
+  late final _uncompactCellsSizePtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(ffi.Pointer<H3Index>, ffi.Int64, ffi.Int,
+              ffi.Pointer<ffi.Int64>)>>('uncompactCellsSize');
+  late final _uncompactCellsSize = _uncompactCellsSizePtr.asFunction<
+      int Function(ffi.Pointer<H3Index>, int, int, ffi.Pointer<ffi.Int64>)>();
 
   /// @brief uncompacts the compacted hexagon set
   int uncompactCells(
@@ -1144,6 +1271,30 @@ class H3C {
           H3Error Function(
               H3Index, H3Index, ffi.Pointer<ffi.Int64>)>>('gridDistance');
   late final _gridDistance = _gridDistancePtr
+      .asFunction<int Function(int, int, ffi.Pointer<ffi.Int64>)>();
+
+  /// @defgroup gridPathCells gridPathCells
+  /// Functions for gridPathCells
+  /// @{
+  /// /
+  /// /** @brief Number of indexes in a line connecting two indexes
+  int gridPathCellsSize(
+    int start,
+    int end,
+    ffi.Pointer<ffi.Int64> size,
+  ) {
+    return _gridPathCellsSize(
+      start,
+      end,
+      size,
+    );
+  }
+
+  late final _gridPathCellsSizePtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(
+              H3Index, H3Index, ffi.Pointer<ffi.Int64>)>>('gridPathCellsSize');
+  late final _gridPathCellsSize = _gridPathCellsSizePtr
       .asFunction<int Function(int, int, ffi.Pointer<ffi.Int64>)>();
 
   /// @brief Line of h3 indexes connecting two indexes
