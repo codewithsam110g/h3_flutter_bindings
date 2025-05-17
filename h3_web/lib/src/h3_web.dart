@@ -64,6 +64,9 @@ class H3Web implements H3 {
 
   @override
   BigInt cellToParent(BigInt h3Index, int resolution) {
+    if (getResolution(h3Index) < resolution || resolution < 0) {
+      return BigInt.zero;
+    }
     // ignore: unnecessary_cast
     final res = h3_js.cellToParent(h3Index.toH3JS(), resolution) as String?;
     if (res == null) {
@@ -77,6 +80,9 @@ class H3Web implements H3 {
     if (!isValidCell(h3Index)) {
       return [];
     }
+    if (getResolution(h3Index) > resolution) {
+      return [];
+    }
     return h3_js
         .cellToChildren(h3Index.toH3JS(), resolution)
         .cast<String>()
@@ -86,6 +92,9 @@ class H3Web implements H3 {
 
   @override
   BigInt cellToCenterChild(BigInt h3Index, int resolution) {
+    if (resolution < getResolution(h3Index) || resolution < 0) {
+      return BigInt.zero;
+    }
     // ignore: unnecessary_cast
     final res = h3_js.cellToCenterChild(
       h3Index.toH3JS(),
@@ -99,6 +108,9 @@ class H3Web implements H3 {
 
   @override
   List<BigInt> gridDisk(BigInt h3Index, int ringSize) {
+    if (ringSize < 0) {
+      return [h3Index];
+    }
     return h3_js
         .gridDisk(h3Index.toH3JS(), ringSize)
         .cast<String>()
@@ -116,10 +128,7 @@ class H3Web implements H3 {
           .toList();
     } catch (e) {
       final message = getJsErrorMessage(e);
-      if (message == 'Failed to get hexRing (encountered a pentagon?)') {
-        throw H3Exception('Failed to get hexRing (encountered a pentagon?)');
-      }
-      rethrow;
+      throw H3Exception("JS Error: $message");
     }
   }
 
@@ -174,15 +183,15 @@ class H3Web implements H3 {
           .toList();
     } catch (e) {
       final message = getJsErrorMessage(e);
-      if (message == 'Failed to uncompact (bad resolution?)') {
-        throw H3Exception('Failed to uncompact (bad resolution?)');
-      }
-      rethrow;
+      throw H3Exception("JS Error: $message");
     }
   }
 
   @override
   bool areNeighborCells(BigInt origin, BigInt destination) {
+    if (!isValidCell(origin) || !isValidCell(destination)) {
+      return false;
+    }
     return h3_js.areNeighborCells(
       origin.toRadixString(16),
       destination.toRadixString(16),
@@ -191,22 +200,26 @@ class H3Web implements H3 {
 
   @override
   BigInt cellsToDirectedEdge(BigInt origin, BigInt destination) {
-    // ignore: unnecessary_cast
-    final res = h3_js.cellsToDirectedEdge(
-      origin.toRadixString(16),
-      destination.toRadixString(16),
-    ) as String?;
-    if (res == null) {
+    try {
+      // ignore: unnecessary_cast
+      final res = h3_js.cellsToDirectedEdge(
+        origin.toRadixString(16),
+        destination.toRadixString(16),
+      ) as String?;
+      if (res == null) {
+        return BigInt.zero;
+      }
+      return res.toBigInt();
+    } catch (e) {
       return BigInt.zero;
     }
-    return res.toBigInt();
   }
 
   @override
   BigInt getDirectedEdgeOrigin(BigInt edgeIndex) {
     // ignore: unnecessary_cast
-    final res = h3_js.getDirectedEdgeOrigin(
-        edgeIndex.toRadixString(16)) as String?;
+    final res =
+        h3_js.getDirectedEdgeOrigin(edgeIndex.toRadixString(16)) as String?;
     if (res == null) {
       return BigInt.zero;
     }
@@ -216,8 +229,8 @@ class H3Web implements H3 {
   @override
   BigInt getDirectedEdgeDestination(BigInt edgeIndex) {
     // ignore: unnecessary_cast
-    final res = h3_js.getDirectedEdgeDestination(
-        edgeIndex.toRadixString(16)) as String?;
+    final res = h3_js.getDirectedEdgeDestination(edgeIndex.toRadixString(16))
+        as String?;
     if (res == null) {
       return BigInt.zero;
     }
@@ -268,7 +281,8 @@ class H3Web implements H3 {
   List<BigInt> gridPathCells(BigInt origin, BigInt destination) {
     try {
       return h3_js
-          .gridPathCells(origin.toRadixString(16), destination.toRadixString(16))
+          .gridPathCells(
+              origin.toRadixString(16), destination.toRadixString(16))
           .cast<String>()
           .map((e) => e.toBigInt())
           .toList();
@@ -277,7 +291,7 @@ class H3Web implements H3 {
       if (message == 'Line cannot be calculated') {
         throw H3Exception('Line cannot be calculated');
       }
-      rethrow;
+      throw H3Exception("JS Error: $message");
     }
   }
 
@@ -305,7 +319,7 @@ class H3Web implements H3 {
       if (message == 'Encountered possible pentagon distortion') {
         throw H3Exception('Encountered possible pentagon distortion');
       }
-      rethrow;
+      throw H3Exception("JS Error: $message");
     }
   }
 
