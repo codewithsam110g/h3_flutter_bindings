@@ -30,6 +30,9 @@ class _MyAppState extends State<MyApp> {
               '${h3.degsToRads(180)}',
               key: const ValueKey('degsToRadsText'),
             ),
+            Text(
+              '${h3.getNumCells(15)}'
+            ),
           ],
         ),
       ),
