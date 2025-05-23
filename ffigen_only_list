@@ -1,0 +1,26 @@
+isValidIndex // Not in C Code just in Migration Guide so DNE // NA
+cellToLoop // DNE // NA
+loopToBoundary // DNE // NA
+boundaryToLoop // DNE // NA
+maxGridDiskSize // internal
+gridDiskUnsafe // internal
+gridDiskSafe // DNE maybe => gridDisk only // NA
+gridDiskDistancesUnsafe // internal
+gridDisksUnsafe // use N * HexRange (now gridDisk)
+gridRingSafe // internal not api use gridRing // NA
+gridRing // ref to gridRingUnsafe fall back to gridDiskDistances based impl
+maxPolygonToCellsSize // mem internal
+cellsToLinkedMultiPolygon // same as cellsToMultiPolygon
+destroyLinkedPolygon // internal mem // NA?
+getPentagonAreaAvg // Future? // NA
+getPentagonEdgeLengthAvg // Future? // NA
+res0CellCount //internal 122
+pentagonCount //internal 12
+cellToChildrenSize // internal mem for cellToChildren
+uncompactCellsSize // internal mem
+maxFaceCount // internal mem
+destinationToDirectedEdges // DNE // NA
+gridPathCellsSize // internal mem for gridPathCells
+gridPathEdges // DNE // NA
+getMode // DNE // NA
+gridPathDirectedEdges // DNE // NA

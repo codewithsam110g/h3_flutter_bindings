@@ -216,24 +216,19 @@ abstract class H3 {
   /// Converts degrees to radians
   double degsToRads(double val);
 
-  // cellsToMultiPolygon
+  // New Funcs which i need to add
+  
   // cellsToLinkedMultiPolygon
+  // cellsToMultiPolygon
   // Above both funcs are same as per uber/h3 docs
   
-  // New DNE Funcs which i need to add
-  // isValidIndex
-  // getMode
-  // gridPathEdges
-  // gridPathDirectedEdges
-  // gridDiskSafe
-  // gridRingSafe
-  // gridRing
-  // destinationToDirectedEdges
-  // getPentagonAreaAvg* (e.g. Km2, M2)
-  // getPentagonEdgeLengthAvg* (e.g. Km, M)
-  // cellAreaKm2
-  // cellAreaM2
-  // cellToLoop
-  // loopToBoundary
-  // boundaryToLoop
+  // describeH3Error
+  // polygonToCellsExperimental // similar to polygonToCells but uses new alg
+  // cellToChildPos
+  // childPosToCell
+  // Below four are new vertex mode funcs and all 4 are public api
+  // cellToVertex
+  // cellToVertexes
+  // vertexToLatLng
+  // isValidVertex
 }

@@ -1,0 +1,9 @@
+describeH3Error
+polygonToCellsExperimental // similar to polygonToCells but uses new alg
+cellToChildPos // new need to impl
+childPosToCell // new need to impl
+// Below four are new vertex mode funcs and all 4 are public api
+cellToVertex
+cellToVertexes
+vertexToLatLng
+isValidVertex
