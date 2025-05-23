@@ -1,6 +1,6 @@
 <p>
-<a href="https://github.com/festelo/h3_dart/actions"><img src="https://github.com/festelo/h3_dart/actions/workflows/tests.yml/badge.svg" alt="Build & Test"></a>
-<a href="https://codecov.io/gh/festelo/h3_dart"><img src="https://codecov.io/gh/festelo/h3_dart/branch/master/graph/badge.svg" alt="codecov"></a>
+<a href="https://github.com/codewithsam110g/h3_flutter_bindings/actions"><img src="https://github.com/codewithsam110g/h3_flutter_bindings/actions/workflows/tests.yml/badge.svg" alt="Build & Test"></a>
+<a href="https://codecov.io/gh/codewithsam110g/h3_flutter_bindings"><img src="https://codecov.io/gh/codewithsam110g/h3_flutter_bindings/branch/master/graph/badge.svg" alt="codecov"></a>
 <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License: Apache 2.0"></a>
 </p>
 
