@@ -18,6 +18,25 @@ class H3C {
           lookup)
       : _lookup = lookup;
 
+  /// @defgroup describeH3Error describeH3Error
+  /// Functions for describeH3Error
+  /// @{
+  /// /
+  /// /** @brief converts the provided H3Error value into a description string
+  ffi.Pointer<ffi.Char> describeH3Error(
+    int err,
+  ) {
+    return _describeH3Error(
+      err,
+    );
+  }
+
+  late final _describeH3ErrorPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(H3Error)>>(
+          'describeH3Error');
+  late final _describeH3Error =
+      _describeH3ErrorPtr.asFunction<ffi.Pointer<ffi.Char> Function(int)>();
+
   /// @defgroup latLngToCell latLngToCell
   /// Functions for latLngToCell
   /// @{
@@ -291,6 +310,61 @@ class H3C {
   late final _polygonToCells = _polygonToCellsPtr.asFunction<
       int Function(ffi.Pointer<GeoPolygon>, int, int, ffi.Pointer<H3Index>)>();
 
+  /// @defgroup polygonToCellsExperimental polygonToCellsExperimental
+  /// Functions for polygonToCellsExperimental.
+  /// This is an experimental-only API and is subject to change in minor versions.
+  /// @{
+  /// /
+  /// /** @brief maximum number of cells that could be in the polygon
+  int maxPolygonToCellsSizeExperimental(
+    ffi.Pointer<GeoPolygon> polygon,
+    int res,
+    int flags,
+    ffi.Pointer<ffi.Int64> out,
+  ) {
+    return _maxPolygonToCellsSizeExperimental(
+      polygon,
+      res,
+      flags,
+      out,
+    );
+  }
+
+  late final _maxPolygonToCellsSizeExperimentalPtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(ffi.Pointer<GeoPolygon>, ffi.Int, ffi.Uint32,
+              ffi.Pointer<ffi.Int64>)>>('maxPolygonToCellsSizeExperimental');
+  late final _maxPolygonToCellsSizeExperimental =
+      _maxPolygonToCellsSizeExperimentalPtr.asFunction<
+          int Function(
+              ffi.Pointer<GeoPolygon>, int, int, ffi.Pointer<ffi.Int64>)>();
+
+  /// @brief cells within the given polygon
+  int polygonToCellsExperimental(
+    ffi.Pointer<GeoPolygon> polygon,
+    int res,
+    int flags,
+    int size,
+    ffi.Pointer<H3Index> out,
+  ) {
+    return _polygonToCellsExperimental(
+      polygon,
+      res,
+      flags,
+      size,
+      out,
+    );
+  }
+
+  late final _polygonToCellsExperimentalPtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(ffi.Pointer<GeoPolygon>, ffi.Int, ffi.Uint32,
+              ffi.Int64, ffi.Pointer<H3Index>)>>('polygonToCellsExperimental');
+  late final _polygonToCellsExperimental =
+      _polygonToCellsExperimentalPtr.asFunction<
+          int Function(
+              ffi.Pointer<GeoPolygon>, int, int, int, ffi.Pointer<H3Index>)>();
+
   /// @defgroup cellsToMultiPolygon cellsToMultiPolygon
   /// Functions for cellsToMultiPolygon (currently a binding-only concept)
   /// @{
@@ -316,6 +390,21 @@ class H3C {
       _cellsToLinkedMultiPolygonPtr.asFunction<
           int Function(
               ffi.Pointer<H3Index>, int, ffi.Pointer<LinkedGeoPolygon>)>();
+
+  /// @brief Free all memory created for a LinkedGeoPolygon
+  void destroyLinkedMultiPolygon(
+    ffi.Pointer<LinkedGeoPolygon> polygon,
+  ) {
+    return _destroyLinkedMultiPolygon(
+      polygon,
+    );
+  }
+
+  late final _destroyLinkedMultiPolygonPtr = _lookup<
+          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<LinkedGeoPolygon>)>>(
+      'destroyLinkedMultiPolygon');
+  late final _destroyLinkedMultiPolygon = _destroyLinkedMultiPolygonPtr
+      .asFunction<void Function(ffi.Pointer<LinkedGeoPolygon>)>();
 
   /// @defgroup degsToRads degsToRads
   /// Functions for degsToRads
@@ -920,6 +1009,58 @@ class H3C {
   late final _cellToCenterChild = _cellToCenterChildPtr
       .asFunction<int Function(int, int, ffi.Pointer<H3Index>)>();
 
+  /// @defgroup cellToChildPos cellToChildPos
+  /// Functions for cellToChildPos
+  /// @{
+  /// /
+  /// /** @brief Returns the position of the cell within an ordered list of all
+  /// children of the cell's parent at the specified resolution
+  int cellToChildPos(
+    int child,
+    int parentRes,
+    ffi.Pointer<ffi.Int64> out,
+  ) {
+    return _cellToChildPos(
+      child,
+      parentRes,
+      out,
+    );
+  }
+
+  late final _cellToChildPosPtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(
+              H3Index, ffi.Int, ffi.Pointer<ffi.Int64>)>>('cellToChildPos');
+  late final _cellToChildPos = _cellToChildPosPtr
+      .asFunction<int Function(int, int, ffi.Pointer<ffi.Int64>)>();
+
+  /// @defgroup childPosToCell childPosToCell
+  /// Functions for childPosToCell
+  /// @{
+  /// /
+  /// /** @brief Returns the child cell at a given position within an ordered list of
+  /// all children at the specified resolution
+  int childPosToCell(
+    int childPos,
+    int parent,
+    int childRes,
+    ffi.Pointer<H3Index> child,
+  ) {
+    return _childPosToCell(
+      childPos,
+      parent,
+      childRes,
+      child,
+    );
+  }
+
+  late final _childPosToCellPtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(ffi.Int64, H3Index, ffi.Int,
+              ffi.Pointer<H3Index>)>>('childPosToCell');
+  late final _childPosToCell = _childPosToCellPtr
+      .asFunction<int Function(int, int, int, ffi.Pointer<H3Index>)>();
+
   /// @defgroup compactCells compactCells
   /// Functions for compactCells
   /// @{
@@ -1249,6 +1390,89 @@ class H3C {
   late final _directedEdgeToBoundary = _directedEdgeToBoundaryPtr
       .asFunction<int Function(int, ffi.Pointer<CellBoundary>)>();
 
+  /// @defgroup cellToVertex cellToVertex
+  /// Functions for cellToVertex
+  /// @{
+  /// /
+  /// /** @brief Returns a single vertex for a given cell, as an H3 index
+  int cellToVertex(
+    int origin,
+    int vertexNum,
+    ffi.Pointer<H3Index> out,
+  ) {
+    return _cellToVertex(
+      origin,
+      vertexNum,
+      out,
+    );
+  }
+
+  late final _cellToVertexPtr = _lookup<
+      ffi.NativeFunction<
+          H3Error Function(
+              H3Index, ffi.Int, ffi.Pointer<H3Index>)>>('cellToVertex');
+  late final _cellToVertex = _cellToVertexPtr
+      .asFunction<int Function(int, int, ffi.Pointer<H3Index>)>();
+
+  /// @defgroup cellToVertexes cellToVertexes
+  /// Functions for cellToVertexes
+  /// @{
+  /// /
+  /// /** @brief Returns all vertexes for a given cell, as H3 indexes
+  int cellToVertexes(
+    int origin,
+    ffi.Pointer<H3Index> vertexes,
+  ) {
+    return _cellToVertexes(
+      origin,
+      vertexes,
+    );
+  }
+
+  late final _cellToVertexesPtr = _lookup<
+          ffi.NativeFunction<H3Error Function(H3Index, ffi.Pointer<H3Index>)>>(
+      'cellToVertexes');
+  late final _cellToVertexes =
+      _cellToVertexesPtr.asFunction<int Function(int, ffi.Pointer<H3Index>)>();
+
+  /// @defgroup vertexToLatLng vertexToLatLng
+  /// Functions for vertexToLatLng
+  /// @{
+  /// /
+  /// /** @brief Returns a single vertex for a given cell, as an H3 index
+  int vertexToLatLng(
+    int vertex,
+    ffi.Pointer<LatLng> point,
+  ) {
+    return _vertexToLatLng(
+      vertex,
+      point,
+    );
+  }
+
+  late final _vertexToLatLngPtr = _lookup<
+          ffi.NativeFunction<H3Error Function(H3Index, ffi.Pointer<LatLng>)>>(
+      'vertexToLatLng');
+  late final _vertexToLatLng =
+      _vertexToLatLngPtr.asFunction<int Function(int, ffi.Pointer<LatLng>)>();
+
+  /// @defgroup isValidVertex isValidVertex
+  /// Functions for isValidVertex
+  /// @{
+  /// /
+  /// /** @brief Whether the input is a valid H3 vertex
+  int isValidVertex(
+    int vertex,
+  ) {
+    return _isValidVertex(
+      vertex,
+    );
+  }
+
+  late final _isValidVertexPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(H3Index)>>('isValidVertex');
+  late final _isValidVertex = _isValidVertexPtr.asFunction<int Function(int)>();
+
   /// @defgroup gridDistance gridDistance
   /// Functions for gridDistance
   /// @{
@@ -1415,6 +1639,9 @@ abstract class H3ErrorCodes {
   static const int E_OPTION_INVALID = 15;
 }
 
+/// @brief Result code (success or specific error) from an H3 operation
+typedef H3Error = ffi.Uint32;
+
 /// @struct LatLng
 /// @brief latitude/longitude in radians
 class LatLng extends ffi.Struct {
@@ -1524,9 +1751,6 @@ class CoordIJ extends ffi.Struct {
   @ffi.Int()
   external int j;
 }
-
-/// @brief Result code (success or specific error) from an H3 operation
-typedef H3Error = ffi.Uint32;
 
 /// @brief Identifier for an object (cell, edge, etc) in the H3 system.
 ///

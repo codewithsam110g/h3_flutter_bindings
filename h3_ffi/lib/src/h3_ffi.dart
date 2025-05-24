@@ -92,10 +92,8 @@ class H3Ffi implements H3 {
     assert(res >= 0 && res < 16, 'Resolution must be in [0, 15] range');
     return using((arena) {
       final out = arena<Uint64>();
-      _h3c
-          .latLngToCell(
-              latLng.toRadians(_latLngConverter).toNative(arena), res, out)
-          .toBigInt();
+      _h3c.latLngToCell(
+          latLng.toRadians(_latLngConverter).toNative(arena), res, out);
       return out.value.toBigInt();
     });
   }
@@ -726,4 +724,206 @@ class H3Ffi implements H3 {
   /// Converts degrees to radians
   @override
   double degsToRads(double val) => _h3c.degsToRads(val);
+
+  // New Funcs
+
+  /// Determines if the given H3 index represents a valid H3 vertex.
+  @override
+  bool isValidVertex(BigInt h3Index) {
+    return _h3c.isValidVertex(h3Index.toInt()) == 1;
+  }
+
+  /// Returns the latitude and longitude coordinates of the given vertex.
+  @override
+  LatLng vertexToLatLng(BigInt vertex) {
+    return using((arena) {
+      final latLngNative = arena<c.LatLng>();
+
+      _h3c.vertexToLatLng(vertex.toInt(), latLngNative);
+      return latLngNative.ref.toPure().toDegrees(_latLngConverter);
+    });
+  }
+
+  /// Returns the index for the specified cell vertex.
+  /// Valid vertex numbers are between 0 and 5 (inclusive) for hexagonal cells, and 0 and 4 (inclusive) for pentagonal cells.
+  @override
+  BigInt cellToVertex(BigInt origin, int vertexNum) {
+    return using((arena) {
+      final out = arena<Uint64>();
+      _h3c.cellToVertex(origin.toInt(), vertexNum, out);
+      return out.value.toBigInt();
+    });
+  }
+
+  /// Returns the indexes for all vertexes of the given cell.
+  /// Length will always be 6. if the given cell is pentagon,
+  /// one member of the array will be set to 0.
+  @override
+  List<BigInt> cellToVertexes(BigInt origin) {
+    return using((arena) {
+      final out = arena<Uint64>(6);
+      _h3c.cellToVertexes(origin.toInt(), out);
+      return out.asTypedList(6).map((x) => x.toBigInt()).toList();
+    });
+  }
+
+  /// Provides the position of the child cell within an ordered list of
+  /// all children of the cell's parent at the specified resolution parentRes.
+  /// The order of the ordered list is the same as that returned by cellToChildren.
+  @override
+  int cellToChildPos(BigInt child, int parentRes) {
+    return using((arena) {
+      final pos = arena<Int64>();
+      _h3c.cellToChildPos(child.toInt(), parentRes, pos);
+      return pos.value;
+    });
+  }
+
+  /// Provides the child cell at a given position within an ordered list of
+  /// all children of parent at the specified resolution childRes.
+  /// The order of the ordered list is the same as that returned by cellToChildren.
+  @override
+  BigInt childPosToCell(int childPos, BigInt parent, int childRes) {
+    return using((arena) {
+      final child = arena<Uint64>();
+      _h3c.childPosToCell(childPos, parent.toInt(), childRes, child);
+      return child.value.toBigInt();
+    });
+  }
+
+  /// Provides a human-readable description of an H3Error error code.
+  @override
+  String describeH3Error(int err) {
+    final Pointer<Utf8> cStr = _h3c.describeH3Error(err).cast<Utf8>();
+    return cStr.toDartString();
+  }
+
+  @override
+  List<BigInt> polygonToCellsExperimental({
+    required List<LatLng> coordinates,
+    required int resolution,
+    List<List<LatLng>> holes = const [],
+    required int flags,
+  }) {
+    assert(resolution >= 0 && resolution < 16,
+        'Resolution must be in [0, 15] range');
+    return using((arena) {
+      // polygon outer boundary
+      final nativeCoordinatesPointer = arena<c.LatLng>(coordinates.length);
+      for (var i = 0; i < coordinates.length; i++) {
+        final pointer = Pointer<c.LatLng>.fromAddress(
+          nativeCoordinatesPointer.address + sizeOf<c.LatLng>() * i,
+        );
+        coordinates[i].toRadians(_latLngConverter).assignToNative(pointer.ref);
+      }
+
+      final polygon = arena<c.GeoPolygon>();
+      final outergeoloop = arena<c.GeoLoop>();
+
+      // outer boundary
+      polygon.ref.geoloop = outergeoloop.ref;
+      polygon.ref.geoloop.verts = nativeCoordinatesPointer;
+      polygon.ref.geoloop.numVerts = coordinates.length;
+
+      // polygon holes
+      if (holes.isNotEmpty) {
+        final holesgeoloopPointer = arena<c.GeoLoop>(holes.length);
+        for (var h = 0; h < holes.length; h++) {
+          final holeCoords = holes[h];
+
+          final singleHoleGLoopPointer = Pointer<c.GeoLoop>.fromAddress(
+            holesgeoloopPointer.address + sizeOf<c.GeoLoop>() * h,
+          );
+
+          final holeNativeCoordinatesPointer =
+              arena<c.LatLng>(holeCoords.length);
+
+          // assign the hole coord to holeptr
+          for (var i = 0; i < holeCoords.length; i++) {
+            final coordPointer = Pointer<c.LatLng>.fromAddress(
+                holeNativeCoordinatesPointer.address + sizeOf<c.LatLng>() * i);
+            holeCoords[i]
+                .toRadians(_latLngConverter)
+                .assignToNative(coordPointer.ref);
+          }
+
+          singleHoleGLoopPointer.ref.numVerts = holeCoords.length;
+          singleHoleGLoopPointer.ref.verts = holeNativeCoordinatesPointer;
+        }
+
+        polygon.ref.numHoles = holes.length;
+        polygon.ref.holes = holesgeoloopPointer;
+      } else {
+        polygon.ref.numHoles = 0;
+        polygon.ref.holes = Pointer.fromAddress(0);
+      }
+      final nbIndex = arena<Int64>();
+      _h3c.maxPolygonToCellsSizeExperimental(
+          polygon, resolution, flags, nbIndex);
+      final out = arena<Uint64>(nbIndex.value);
+      _h3c.polygonToCellsExperimental(
+          polygon, resolution, 0, nbIndex.value, out);
+      final list = out.asTypedList(nbIndex.value).toList();
+      return list.where((e) => e != 0).map((e) => e.toBigInt()).toList();
+    });
+  }
+
+  @override
+  List<Polygon> cellsToMultiPolygon(List<BigInt> h3Set) {
+    return using((arena) {
+      final h3s = arena<Uint64>(h3Set.length);
+      for (var i = 0; i < h3Set.length; i++) {
+        h3s[i] = h3Set[i].toInt();
+      }
+      
+      final outPtr = arena<c.LinkedGeoPolygon>();
+      
+      final err = _h3c.cellsToLinkedMultiPolygon(
+        h3s,
+        h3Set.length,
+        outPtr,
+      );
+      
+      if (err != 0) {
+        throw Exception('H3 error code: $err');
+      }
+      
+      final result = <Polygon>[];
+      var polyPtr = outPtr;
+      
+      while (polyPtr != nullptr) {
+        final outer = <LatLng>[];
+        final holes = <List<LatLng>>[];
+        var loopPtr = polyPtr.ref.first;
+        
+        while (loopPtr != nullptr) {
+          final points = <LatLng>[];
+          var latLngPtr = loopPtr.ref.first;
+          
+          while (latLngPtr != nullptr) {
+            final vtx = latLngPtr.ref.vertex;
+            points.add(LatLng(
+              lat: _h3c.radsToDegs(vtx.lat), 
+              lng: _h3c.radsToDegs(vtx.lng)
+            ));
+            latLngPtr = latLngPtr.ref.next;
+          }
+          
+          if (outer.isEmpty) {
+            outer.addAll(points);
+          } else {
+            holes.add(points);
+          }
+          
+          loopPtr = loopPtr.ref.next;
+        }
+        
+        result.add(Polygon(outer: outer, holes: holes));
+        polyPtr = polyPtr.ref.next;
+      }
+      
+      _h3c.destroyLinkedMultiPolygon(outPtr);
+      return result;
+    });
+  }
 }

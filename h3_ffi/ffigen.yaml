@@ -13,28 +13,20 @@ comments:
   length: full
 functions:
   include:
-    - isValidIndex
     - latLngToCell
     - cellToLatLng
     - cellToBoundary
-    - cellToLoop
-    - loopToBoundary
-    - boundaryToLoop
     - maxGridDiskSize
     - gridDiskUnsafe
-    - gridDiskSafe
     - gridDiskDistancesUnsafe
     - gridDisksUnsafe
     - gridDisk
     - gridDiskDistances
     - gridRingUnsafe
-    - gridRingSafe
-    - gridRing
     - maxPolygonToCellsSize
     - polygonToCells
     - cellsToLinkedMultiPolygon
     - cellsToMultiPolygon
-    - destroyLinkedPolygon
     - degsToRads
     - radsToDegs
     - greatCircleDistanceRads
@@ -50,8 +42,6 @@ functions:
     - edgeLengthRads
     - edgeLengthKm
     - edgeLengthM
-    - getPentagonAreaAvg
-    - getPentagonEdgeLengthAvg
     - getNumCells
     - res0CellCount
     - getRes0Cells
@@ -80,16 +70,23 @@ functions:
     - getDirectedEdgeDestination
     - directedEdgeToCells
     - originToDirectedEdges
-    - destinationToDirectedEdges
     - directedEdgeToBoundary
     - gridDistance
     - gridPathCellsSize
     - gridPathCells
-    - gridPathEdges
-    - getMode
-    - gridPathDirectedEdges
     - cellToLocalIj
     - localIjToCell
+    # new funcs
+    - describeH3Error
+    - polygonToCellsExperimental
+    - maxPolygonToCellsSizeExperimental
+    - cellToChildPos
+    - childPosToCell
+    - cellToVertex
+    - cellToVertexes
+    - destroyLinkedMultiPolygon
+    - vertexToLatLng
+    - isValidVertex
 unions:
   exclude:
     - .*

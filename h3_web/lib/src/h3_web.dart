@@ -432,4 +432,141 @@ class H3Web implements H3 {
 
   @override
   double degsToRads(double val) => h3_js.degsToRads(val).toDouble();
+
+  @override
+  bool isValidVertex(BigInt h3Index) {
+    return h3_js.isValidVertex(h3Index);
+  }
+
+  @override
+  LatLng vertexToLatLng(BigInt vertex) {
+    return LatLng(
+        lat: h3_js.vertexToLatLng(vertex).cast<num>()[0].toDouble(),
+        lng: h3_js.vertexToLatLng(vertex).cast<num>()[1].toDouble());
+  }
+
+  @override
+  BigInt cellToVertex(BigInt origin, int vertexNum) {
+    final out =
+        h3_js.cellToVertex(origin.toRadixString(16), vertexNum) as String?;
+    if (out == null) {
+      return BigInt.zero;
+    } else {
+      return out.toBigInt();
+    }
+  }
+
+  @override
+  List<BigInt> cellToVertexes(BigInt origin) {
+    return h3_js
+        .cellToVertexes(origin.toRadixString(16))
+        .cast<String>()
+        .map((e) => e.toBigInt())
+        .toList();
+  }
+
+  @override
+  int cellToChildPos(BigInt child, int parentRes) {
+    return h3_js.cellToChildPos(child.toRadixString(16), parentRes).toInt();
+  }
+
+  @override
+  BigInt childPosToCell(int childPos, BigInt parent, int childRes) {
+    return h3_js
+        .childPosToCell(childPos, parent.toRadixString(16), childRes)
+        .toBigInt();
+  }
+
+  @override
+  String describeH3Error(int err) {
+    const Map<int, String> h3ErrorMessages = {
+      0: "Success",
+      1: "The operation failed but a more specific error is not available",
+      2: "Argument was outside of acceptable range ",
+      3: "Latitude or longitude arguments were outside of acceptable range",
+      4: "Resolution argument was outside of acceptable range",
+      5: "H3Index cell argument was not valid",
+      6: "H3Index directed edge argument was not valid",
+      7: "H3Index undirected edge argument was not valid",
+      8: "H3Index vertex argument was not valid",
+      9: "Pentagon distortion was encountered which the algorithm could not handle it",
+      10: "Duplicate input was encountered in the arguments and the algorithm could not handle it",
+      11: "H3Index cell arguments were not neighbors",
+      12: "H3Index cell arguments had incompatible resolutions",
+      13: "Necessary memory allocation failed",
+      14: "Bounds of provided memory were not large enough",
+      15: "Mode or flags argument was not valid"
+    };
+
+    return h3ErrorMessages[err] ?? "Unknown error code: $err";
+  }
+
+  @override
+  List<BigInt> polygonToCellsExperimental({
+    required List<LatLng> coordinates,
+    required int resolution,
+    List<List<LatLng>> holes = const [],
+    required int flags,
+  }) {
+    final flagMap = {
+      0: h3_js.containmentCenter,
+      1: h3_js.containmentFull,
+      2: h3_js.containmentOverlapping,
+      3: h3_js.containmentOverlappingBbox,
+    };
+    final flag = flagMap[flags] ?? h3_js.containmentOverlappingBbox;
+    assert(resolution >= 0 && resolution < 16,
+        'Resolution must be in [0, 15] range');
+    return h3_js
+        .polygonToCellsExperimental([
+          coordinates.map((e) => [e.lat, e.lng]).toList(),
+          ...holes
+              .map((arr) => arr.map((e) => [e.lat, e.lng]).toList())
+              .toList(),
+        ], resolution, flag)
+        .cast<String>()
+        .map((e) => e.toBigInt())
+        .toList();
+  }
+
+  @override
+  List<Polygon> cellsToMultiPolygon(List<BigInt> h3Set) {
+    final out = h3_js.cellsToMultiPolygon(
+      h3Set.map((e) => e.toRadixString(16)).toList(), 
+      true
+    );
+    
+    final result = <Polygon>[];
+    
+    for (final polygon in out) {
+      final outer = <LatLng>[];
+      final holes = <List<LatLng>>[];
+      
+      for (int i = 0; i < polygon.length; i++) {
+        final ring = polygon[i] as List;
+        final points = <LatLng>[];
+        
+        for (final coordinate in ring) {
+          final coord = coordinate as List;
+          // H3.js returns [lat, lng] format when formatAsGeoJSON is true
+          points.add(LatLng(
+            lat: (coord[0] as num).toDouble(),
+            lng: (coord[1] as num).toDouble(),
+          ));
+        }
+        
+        if (i == 0) {
+          // First ring is the outer boundary
+          outer.addAll(points);
+        } else {
+          // Subsequent rings are holes
+          holes.add(points);
+        }
+      }
+      
+      result.add(Polygon(outer: outer, holes: holes));
+    }
+    
+    return result;
+  }
 }

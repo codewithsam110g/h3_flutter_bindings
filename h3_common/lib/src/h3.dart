@@ -1,4 +1,5 @@
 import 'package:h3_common/h3_common.dart';
+import 'package:h3_common/src/models/polygon.dart';
 
 /// Provides access to H3 functions.
 abstract class H3 {
@@ -216,19 +217,24 @@ abstract class H3 {
   /// Converts degrees to radians
   double degsToRads(double val);
 
-  // New Funcs which i need to add
-  
-  // cellsToLinkedMultiPolygon
-  // cellsToMultiPolygon
-  // Above both funcs are same as per uber/h3 docs
-  
-  // describeH3Error
-  // polygonToCellsExperimental // similar to polygonToCells but uses new alg
-  // cellToChildPos
-  // childPosToCell
-  // Below four are new vertex mode funcs and all 4 are public api
-  // cellToVertex
-  // cellToVertexes
-  // vertexToLatLng
-  // isValidVertex
+  // maxPolygonToCellsSizeExperimental is the correct one not maxPolygonToCellsExperimentalSize
+
+  List<Polygon> cellsToMultiPolygon(List<BigInt> h3Set);
+
+  List<BigInt> polygonToCellsExperimental({
+    required List<LatLng> coordinates,
+    required int resolution,
+    List<List<LatLng>> holes = const [],
+    required int flags,
+  });
+
+  String describeH3Error(int err);
+
+  BigInt childPosToCell(int childPos, BigInt parent, int childRes);
+  int cellToChildPos(BigInt child, int parentRes);
+
+  bool isValidVertex(BigInt h3Index);
+  LatLng vertexToLatLng(BigInt vertex);
+  BigInt cellToVertex(BigInt origin, int vertexNum);
+  List<BigInt> cellToVertexes(BigInt origin);
 }
