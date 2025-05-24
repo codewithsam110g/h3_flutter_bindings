@@ -182,7 +182,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
-
       - name: Setup subosito/flutter-action@v2
         uses: subosito/flutter-action@v2
         with:
@@ -193,29 +192,22 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-
       - name: Disable macos
         run: flutter config --no-enable-macos-desktop
         working-directory: ./h3_flutter
-
       - name: Disable web
         run: flutter config --no-enable-web
         working-directory: ./h3_flutter
-
       - name: Override dependencies
         run: dart scripts/dependency_override.dart
-
       - name: Pub get
         run: flutter pub get
         working-directory: ./h3_flutter
-
       - name: Analyze
         run: flutter analyze
         working-directory: ./h3_flutter
-
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2
-
       - name: AVD cache
         uses: actions/cache@v3
         id: avd-cache
@@ -223,24 +215,24 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-31
-
+          key: avd-31-arm64  # Updated cache key
       - name: create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 31
-          arch: x86_64
+          arch: arm64-v8a  # Changed from x86_64
+          target: google_apis  # Use Google APIs for ARM64
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."
-
       - name: Run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 31
-          arch: x86_64
+          arch: arm64-v8a  # Changed from x86_64
+          target: google_apis  # Use Google APIs for ARM64
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
@@ -318,9 +310,8 @@ jobs:
 
     - name: Setup Chrome
       uses: browser-actions/setup-chrome@latest
-
-    - name: Setup Chrome Driver
-      uses: browser-actions/setup-chromedriver@v1
+      with:
+          install-chromedriver: true
     - run: |
         export DISPLAY=:99
         chromedriver --port=4444 &
