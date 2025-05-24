@@ -175,6 +175,9 @@ class H3Ffi implements H3 {
   /// Maximum number of hexagons in k-ring
   @override
   List<BigInt> gridDisk(BigInt h3Index, int ringSize) {
+    if (ringSize < 0) {
+      return [h3Index];
+    }
     return using((arena) {
       final kIndex = arena<Int64>();
       _h3c.maxGridDiskSize(ringSize, kIndex);
@@ -466,6 +469,20 @@ class H3Ffi implements H3 {
   /// Returns -1 when result can't be calculated
   @override
   int gridDistance(BigInt origin, BigInt destination) {
+    if (isValidDirectedEdge(origin) || isValidDirectedEdge(destination)) {
+      return -1;
+    }
+
+    // Then check if both are valid cells
+    if (!isValidCell(origin) || !isValidCell(destination)) {
+      return -1;
+    }
+
+    // Finally check if resolutions match
+    if (getResolution(origin) != getResolution(destination)) {
+      return -1;
+    }
+    
     return using((arena) {
       final distance = arena<Int64>();
       _h3c.gridDistance(origin.toInt(), destination.toInt(), distance);
@@ -875,55 +892,71 @@ class H3Ffi implements H3 {
       for (var i = 0; i < h3Set.length; i++) {
         h3s[i] = h3Set[i].toInt();
       }
-      
+
       final outPtr = arena<c.LinkedGeoPolygon>();
-      
+
       final err = _h3c.cellsToLinkedMultiPolygon(
         h3s,
         h3Set.length,
         outPtr,
       );
-      
+
       if (err != 0) {
         throw Exception('H3 error code: $err');
       }
-      
+
       final result = <Polygon>[];
       var polyPtr = outPtr;
-      
+
       while (polyPtr != nullptr) {
         final outer = <LatLng>[];
         final holes = <List<LatLng>>[];
         var loopPtr = polyPtr.ref.first;
-        
+
         while (loopPtr != nullptr) {
           final points = <LatLng>[];
           var latLngPtr = loopPtr.ref.first;
-          
+
           while (latLngPtr != nullptr) {
             final vtx = latLngPtr.ref.vertex;
             points.add(LatLng(
-              lat: _h3c.radsToDegs(vtx.lat), 
-              lng: _h3c.radsToDegs(vtx.lng)
-            ));
+                lat: _h3c.radsToDegs(vtx.lat), lng: _h3c.radsToDegs(vtx.lng)));
             latLngPtr = latLngPtr.ref.next;
           }
-          
+
           if (outer.isEmpty) {
             outer.addAll(points);
           } else {
             holes.add(points);
           }
-          
+
           loopPtr = loopPtr.ref.next;
         }
-        
+
         result.add(Polygon(outer: outer, holes: holes));
         polyPtr = polyPtr.ref.next;
       }
-      
+
       _h3c.destroyLinkedMultiPolygon(outPtr);
       return result;
+    });
+  }
+
+  @override
+  String h3ToString(BigInt h3) {
+    return using((arena) {
+      final out = arena<Char>(17);
+      _h3c.h3ToString(h3.toInt(), out, 17);
+      return out.cast<Utf8>().toDartString();
+    });
+  }
+
+  @override
+  BigInt stringToH3(String h3Str) {
+    return using((arena) {
+      final out = arena<Uint64>();
+      _h3c.stringToH3(h3Str.toNativeUtf8(allocator: arena).cast<Char>(), out);
+      return out.value.toBigInt();
     });
   }
 }

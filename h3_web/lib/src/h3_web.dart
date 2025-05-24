@@ -217,6 +217,10 @@ class H3Web implements H3 {
 
   @override
   BigInt getDirectedEdgeOrigin(BigInt edgeIndex) {
+    if (!isValidDirectedEdge(edgeIndex)) {
+      return BigInt.zero;
+    }
+
     // ignore: unnecessary_cast
     final res =
         h3_js.getDirectedEdgeOrigin(edgeIndex.toRadixString(16)) as String?;
@@ -228,6 +232,9 @@ class H3Web implements H3 {
 
   @override
   BigInt getDirectedEdgeDestination(BigInt edgeIndex) {
+    if (!isValidDirectedEdge(edgeIndex)) {
+      return BigInt.zero;
+    }
     // ignore: unnecessary_cast
     final res = h3_js.getDirectedEdgeDestination(edgeIndex.toRadixString(16))
         as String?;
@@ -272,6 +279,19 @@ class H3Web implements H3 {
 
   @override
   int gridDistance(BigInt origin, BigInt destination) {
+    if (isValidDirectedEdge(origin) || isValidDirectedEdge(destination)) {
+      return -1;
+    }
+
+    // Then check if both are valid cells
+    if (!isValidCell(origin) || !isValidCell(destination)) {
+      return -1;
+    }
+
+    // Finally check if resolutions match
+    if (getResolution(origin) != getResolution(destination)) {
+      return -1;
+    }
     return h3_js
         .gridDistance(origin.toRadixString(16), destination.toRadixString(16))
         .toInt();
@@ -306,19 +326,6 @@ class H3Web implements H3 {
       );
     } catch (e) {
       final message = getJsErrorMessage(e);
-      if (message == 'Incompatible origin and index.') {
-        throw H3Exception('Incompatible origin and index.');
-      }
-      if (message ==
-          'Local IJ coordinates undefined for this origin and index pair. '
-              'The index may be too far from the origin.') {
-        throw H3Exception(
-            'Local IJ coordinates undefined for this origin and index pair. '
-            'The index may be too far from the origin.');
-      }
-      if (message == 'Encountered possible pentagon distortion') {
-        throw H3Exception('Encountered possible pentagon distortion');
-      }
       throw H3Exception("JS Error: $message");
     }
   }
@@ -337,17 +344,7 @@ class H3Web implements H3 {
           .toBigInt();
     } catch (e) {
       final message = getJsErrorMessage(e);
-      if (message ==
-          'Index not defined for this origin and IJ coordinates pair. '
-              'IJ coordinates may be too far from origin, or '
-              'a pentagon distortion was encountered.') {
-        throw H3Exception(
-          'Index not defined for this origin and IJ coordinates pair. '
-          'IJ coordinates may be too far from origin, or '
-          'a pentagon distortion was encountered.',
-        );
-      }
-      rethrow;
+      throw H3Exception("JS Error: $message");
     }
   }
 
@@ -532,20 +529,18 @@ class H3Web implements H3 {
   @override
   List<Polygon> cellsToMultiPolygon(List<BigInt> h3Set) {
     final out = h3_js.cellsToMultiPolygon(
-      h3Set.map((e) => e.toRadixString(16)).toList(), 
-      true
-    );
-    
+        h3Set.map((e) => e.toRadixString(16)).toList(), true);
+
     final result = <Polygon>[];
-    
+
     for (final polygon in out) {
       final outer = <LatLng>[];
       final holes = <List<LatLng>>[];
-      
+
       for (int i = 0; i < polygon.length; i++) {
         final ring = polygon[i] as List;
         final points = <LatLng>[];
-        
+
         for (final coordinate in ring) {
           final coord = coordinate as List;
           // H3.js returns [lat, lng] format when formatAsGeoJSON is true
@@ -554,7 +549,7 @@ class H3Web implements H3 {
             lng: (coord[1] as num).toDouble(),
           ));
         }
-        
+
         if (i == 0) {
           // First ring is the outer boundary
           outer.addAll(points);
@@ -563,10 +558,20 @@ class H3Web implements H3 {
           holes.add(points);
         }
       }
-      
+
       result.add(Polygon(outer: outer, holes: holes));
     }
-    
+
     return result;
+  }
+
+  @override
+  String h3ToString(BigInt h3) {
+    return h3.toRadixString(16);
+  }
+
+  @override
+  BigInt stringToH3(String h3Str) {
+    return h3Str.toBigInt();
   }
 }

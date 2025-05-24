@@ -1,5 +1,4 @@
 import 'package:h3_common/h3_common.dart';
-import 'package:h3_common/src/models/polygon.dart';
 
 /// Provides access to H3 functions.
 abstract class H3 {
@@ -9,9 +8,7 @@ abstract class H3 {
   /// Determines if [h3Index] is a valid pentagon
   bool isPentagon(BigInt h3Index);
 
-  /// Determines if [h3Index] is Class III (rotated versus
-  /// the icosahedron and subject to shape distortion adding extra points on
-  /// icosahedron edges, making them not true hexagons).
+  /// Determines if [h3Index] Resolution is Class III (Rotated ~19.1 deg or not)
   bool isResClassIII(BigInt h3Index);
 
   /// Returns the base cell "number" (0 to 121) of the provided H3 cell
@@ -23,18 +20,18 @@ abstract class H3 {
   /// Find all icosahedron faces intersected by a given H3 index
   List<int> getIcosahedronFaces(BigInt h3Index);
 
-  /// Returns the resolution of the provided H3 index
+  /// Returns the resolution of the index.
   ///
-  /// Works on both cells and unidirectional edges.
+  /// Works for cells, edges, and vertexes
   int getResolution(BigInt h3Index);
 
-  /// Find the H3 index of the resolution res cell containing the lat/lng
+  /// Finds the Cell based on the [latLng] coordinates at the specified resolution level [res]
   BigInt latLngToCell(LatLng latLng, int res);
 
-  /// Find the lat/lon center point g of the cell h3
+  /// Gives the Coordinates [LatLng] based on the center of the given cell
   LatLng cellToLatLng(BigInt h3Index);
 
-  /// Gives the cell boundary in lat/lon coordinates for the cell with index [h3Index]
+  /// Gives the cell boundary in lat/lng coordinates for the cell with index [h3Index]
   ///
   /// ```dart
   /// h3.h3ToGeoBoundary(0x85283473fffffff)
@@ -55,14 +52,28 @@ abstract class H3 {
   /// Returns 0 when result can't be calculated
   BigInt cellToCenterChild(BigInt h3Index, int resolution);
 
-  /// Maximum number of hexagons in k-ring
+  /// Produces the "filled-in disk" of cells which are at most grid distance `k`
+  /// from the origin cell. This includes the origin cell itself.
+  ///
+  /// - [h3Index]: The origin cell index.
+  /// - [ringSize]: The maximum grid distance (k).
+  ///
+  /// Returns a list of cell indexes covering the disk-shaped area.
   List<BigInt> gridDisk(BigInt h3Index, int ringSize);
 
-  /// Hollow hexagon ring at some origin
+  /// Produces the "How Ring" of cells which are at most grid distance `k`
+  /// from the origin cell. This includes the origin cell itself.
+  ///
+  /// - [h3Index]: The origin cell index.
+  /// - [ringSize]: The maximum grid distance (k).
+  ///
+  /// Returns a list of cell indexes covering the Hollow Ring.
   List<BigInt> gridRingUnsafe(BigInt h3Index, int ringSize);
 
   /// Takes a given [coordinates] and [resolution] and returns hexagons that
   /// are contained by them.
+  ///
+  /// It also accepts an optional [holes] parameter to specify any interior loops (holes) within the polygon.
   ///
   /// [resolution] must be in the range [0, 15].
   ///
@@ -72,14 +83,14 @@ abstract class H3 {
   /// hexagons are found.
   ///
   /// ```dart
-  /// final hexagons = h3.polyfill(
+  /// final hexagons = h3.polygonToCells(
   ///   coordinates: const [
-  ///     LatLng(lat: 37.813318999983238, lon: -122.4089866999972145),
-  ///     LatLng(lat: 37.7866302000007224, lon: -122.3805436999997056),
-  ///     LatLng(lat: 37.7198061999978478, lon: -122.3544736999993603),
-  ///     LatLng(lat: 37.7076131999975672, lon: -122.5123436999983966),
-  ///     LatLng(lat: 37.7835871999971715, lon: -122.5247187000021967),
-  ///     LatLng(lat: 37.8151571999998453, lon: -122.4798767000009008),
+  ///     LatLng(lat: 37.813318999983238, lng: -122.4089866999972145),
+  ///     LatLng(lat: 37.7866302000007224, lng: -122.3805436999997056),
+  ///     LatLng(lat: 37.7198061999978478, lng: -122.3544736999993603),
+  ///     LatLng(lat: 37.7076131999975672, lng: -122.5123436999983966),
+  ///     LatLng(lat: 37.7835871999971715, lng: -122.5247187000021967),
+  ///     LatLng(lat: 37.8151571999998453, lng: -122.4798767000009008),
   ///   ],
   ///   resolution: 9,
   /// )
@@ -90,8 +101,9 @@ abstract class H3 {
     List<List<LatLng>> holes,
   });
 
-  /// Compact a set of hexagons of the same resolution into a set of hexagons
+  /// Compact a set of H3 Cells of the same resolution into a set of H3 Cells
   /// across multiple levels that represents the same area.
+  /// Note: Input cells must all share the same resolution
   List<BigInt> compactCells(List<BigInt> hexagons);
 
   /// Uncompact a compacted set of hexagons to hexagons of the same resolution
@@ -100,32 +112,25 @@ abstract class H3 {
     required int resolution,
   });
 
-  /// Returns whether or not two H3 indexes are neighbors (share an edge)
+  /// Determines whether or not the provided H3 cells are neighbors.
   bool areNeighborCells(BigInt origin, BigInt destination);
 
-  /// Get an H3 index representing a unidirectional edge for a given origin and
-  /// destination
-  ///
-  /// Returns 0 when result can't be calculated
+  /// Provides a directed edge H3 index based on the provided origin and destination.
   BigInt cellsToDirectedEdge(BigInt origin, BigInt destination);
 
-  /// Get the origin hexagon from an H3 index representing a unidirectional edge
-  ///
-  /// Returns 0 when result can't be calculated
+  /// Provides the origin hexagon from the directed edge H3Index.
   BigInt getDirectedEdgeOrigin(BigInt edgeIndex);
 
-  /// Get the destination hexagon from an H3 index representing a unidirectional edge
-  ///
-  /// Returns 0 when result can't be calculated
+  /// Provides the destination hexagon from the directed edge H3Index.
   BigInt getDirectedEdgeDestination(BigInt edgeIndex);
 
-  /// Returns whether or not the input is a valid unidirectional edge
+  /// Determines if the provided H3Index is a valid directed edge index
   bool isValidDirectedEdge(BigInt edgeIndex);
 
-  /// Get the [origin, destination] pair represented by a unidirectional edge
+  /// Get the [origin, destination] pair represented by a directed edge
   List<BigInt> directedEdgeToCells(BigInt edgeIndex);
 
-  /// Get all of the unidirectional edges with the given H3 index as the origin
+  /// Provides all of the directed edges from the current cell.
   /// (i.e. an edge to every neighbor)
   List<BigInt> originToDirectedEdges(BigInt edgeIndex);
 
@@ -134,9 +139,9 @@ abstract class H3 {
   /// 3 coordinates.
   List<LatLng> directedEdgeToBoundary(BigInt edgeIndex);
 
-  /// Get the grid distance between two hex indexes. This function may fail
-  /// to find the distance between two indexes if they are very far apart or
-  /// on opposite sides of a pentagon.
+  /// Provides the grid distance between two cells,
+  /// which is defined as the minimum number of "hops"
+  /// needed across adjacent cells to get from one cell to the other.
   ///
   /// Returns -1 when result can't be calculated
   int gridDistance(BigInt origin, BigInt destination);
@@ -151,13 +156,13 @@ abstract class H3 {
   ///
   ///  - The specific output of this function should not be considered stable
   ///    across library versions. The only guarantees the library provides are
-  ///    that the line length will be `h3Distance(start, end) + 1` and that
+  ///    that the line length will be `gridDistance(start, end) + 1` and that
   ///    every index in the line will be a neighbor of the preceding index.
   ///  - Lines are drawn in grid space, and may not correspond exactly to either
   ///    Cartesian lines or great arcs.
   List<BigInt> gridPathCells(BigInt origin, BigInt destination);
 
-  /// Produces IJ coordinates for an H3 index anchored by an origin.
+  /// Produces IJ coordinates for an H3 cell anchored by an origin.
   ///
   /// - The coordinate space used by this function may have deleted
   /// regions or warping due to pentagonal distortion.
@@ -169,7 +174,7 @@ abstract class H3 {
   /// to be compatible across different versions of H3.
   CoordIJ cellToLocalIj(BigInt origin, BigInt destination);
 
-  /// Produces an H3 index for IJ coordinates anchored by an origin.
+  /// Produces an H3 cell for IJ coordinates anchored by an origin.
   ///
   /// - The coordinate space used by this function may have deleted
   /// regions or warping due to pentagonal distortion.
@@ -181,7 +186,7 @@ abstract class H3 {
   /// to be compatible across different versions of H3.
   BigInt localIjToCell(BigInt origin, CoordIJ coordinates);
 
-  /// Calculates great circle distance between two geo points.
+  /// Calculates great circle or haversine distance between two geo points.
   double greatCircleDistance(LatLng a, LatLng b, H3Units unit);
 
   /// Calculates exact area of a given cell in square [unit]s (e.g. m^2)
@@ -204,7 +209,7 @@ abstract class H3 {
   int getNumCells(int res);
 
   /// Returns all H3 indexes at resolution 0. As every index at every resolution > 0 is
-  /// the descendant of a res 0 index, this can be used with h3ToChildren to iterate
+  /// the descendant of a res 0 index, this can be used with cellToChildren to iterate
   /// over H3 indexes at any resolution.
   List<BigInt> getRes0Cells();
 
@@ -219,8 +224,18 @@ abstract class H3 {
 
   // maxPolygonToCellsSizeExperimental is the correct one not maxPolygonToCellsExperimentalSize
 
+  /// Create a GeoJSON-like multi-polygon describing the outline(s) of a set of cells.
+  /// Polygon outlines will follow GeoJSON MultiPolygon order:
+  /// Each polygon will have one outer loop, which is first in the list,
+  /// followed by any holes.
   List<Polygon> cellsToMultiPolygon(List<BigInt> h3Set);
 
+  /// takes as input a GeoJSON-like data structure describing a polygon
+  /// (i.e., an outer ring and optional holes) and a target cell resolution.
+  /// It produces a collection of cells that are contained within the polygon.
+  ///
+  /// This function differs from polygonToCells in that it uses an experimental new algorithm
+  /// which supports center-based, fully-contained, and overlapping containment modes. with [flags]
   List<BigInt> polygonToCellsExperimental({
     required List<LatLng> coordinates,
     required int resolution,
@@ -228,13 +243,35 @@ abstract class H3 {
     required int flags,
   });
 
+  /// Provides a Error Message from the H3Error Codes [0-15]
   String describeH3Error(int err);
 
+  /// It gives the Child Cell from the Parent Cell using
+  /// the Resolution [childRes] and [childPos] Index in that Child Resolution
   BigInt childPosToCell(int childPos, BigInt parent, int childRes);
+
+  /// Provides the position of the [child] cell within an ordered list of
+  /// all children of the cell's parent at the specified resolution [parentRes].
+  /// The order of the ordered list is the same as that returned by cellToChildren.
   int cellToChildPos(BigInt child, int parentRes);
 
+  /// Determines if the given H3 index represents a valid H3 vertex.
   bool isValidVertex(BigInt h3Index);
+
+  /// Returns the latitude and longitude coordinates of the given vertex
   LatLng vertexToLatLng(BigInt vertex);
+
+  /// Returns the index for the specified cell vertex.
+  /// Valid vertex numbers are between 0 and 5 (inclusive) for hexagonal cells,
+  /// and 0 and 4 (inclusive) for pentagonal cells.
   BigInt cellToVertex(BigInt origin, int vertexNum);
+
+  /// Returns the indexes for all vertexes of the given cell.
   List<BigInt> cellToVertexes(BigInt origin);
+
+  /// Converts the H3Index representation of the index to the string representation
+  String h3ToString(BigInt h3);
+
+  /// Converts the string representation to H3Index (uint64_t) representation.
+  BigInt stringToH3(String h3Str);
 }

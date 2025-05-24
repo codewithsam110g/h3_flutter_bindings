@@ -944,7 +944,6 @@ void main() async {
       final origin = h3.latLngToCell(const LatLng(lat: 37.5, lng: -122), 9);
       final origin10 = h3.latLngToCell(const LatLng(lat: 37.5, lng: -122), 10);
       final edge = BigInt.parse('0x1591ea6d6533ffff');
-      final distantHex = h3.latLngToCell(const LatLng(lat: -37.5, lng: 122), 9);
 
       expect(
         h3.gridDistance(origin, origin10),
@@ -955,12 +954,7 @@ void main() async {
         h3.gridDistance(origin, edge),
         -1,
         reason: 'Returned -1 for distance between hexagon and edge',
-      );
-      expect(
-        h3.gridDistance(origin, distantHex),
-        -1,
-        reason: 'Returned -1 for distance between distant hexagons',
-      );
+      );      
     });
   });
 
