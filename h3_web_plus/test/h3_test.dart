@@ -3,7 +3,7 @@ library h3_web.test.web.h3_test;
 import 'dart:math';
 
 import 'package:test/test.dart';
-import 'package:h3_web_plus/h3_web.dart';
+import 'package:h3_web_plus/h3_web_plus.dart';
 import 'package:collection/collection.dart';
 
 import 'common.dart';

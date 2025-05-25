@@ -1,4 +1,4 @@
-import 'package:h3_common_plus/h3_common.dart';
+import 'package:h3_common_plus/h3_common_plus.dart';
 
 /// Provides access to H3 functions.
 abstract class H3 {

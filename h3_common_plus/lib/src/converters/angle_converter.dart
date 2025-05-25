@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:h3_common_plus/h3_common.dart';
+import 'package:h3_common_plus/h3_common_plus.dart';
 
 /// Converter between radians and degrees
 abstract class AngleConverter {

@@ -1,4 +1,4 @@
-import 'package:h3_ffi_plus/h3_ffi.dart';
+import 'package:h3_ffi_plus/h3_ffi_plus.dart';
 
 const geoPrecision = 12;
 

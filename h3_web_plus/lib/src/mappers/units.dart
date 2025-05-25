@@ -1,4 +1,4 @@
-import 'package:h3_web_plus/h3_web.dart';
+import 'package:h3_web_plus/h3_web_plus.dart';
 
 extension H3UnitsMapperExt on H3Units {
   String toH3JS() {

@@ -1,6 +1,6 @@
 import 'dart:ffi';
 import 'package:test/test.dart';
-import 'package:h3_ffi_plus/h3_ffi.dart';
+import 'package:h3_ffi_plus/h3_ffi_plus.dart';
 import 'package:path/path.dart' as p;
 
 void main() {

@@ -1,10 +1,10 @@
-import 'package:geojson2h3_plus/geojson2h3.dart';
-import 'package:h3_common_plus/h3_common.dart';
+import 'package:geojson2h3_plus/geojson2h3_plus.dart';
+import 'package:h3_common_plus/h3_common_plus.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'geojson2h3_test.mocks.dart';
+import 'geojson2h3_plus_test.mocks.dart';
 
 @GenerateMocks([H3])
 void main() {

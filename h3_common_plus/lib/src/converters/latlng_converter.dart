@@ -1,4 +1,4 @@
-import 'package:h3_common_plus/h3_common.dart';
+import 'package:h3_common_plus/h3_common_plus.dart';
 
 /// Converter between [LatLng] and [LatLngRadians]
 class LatLngConverter {

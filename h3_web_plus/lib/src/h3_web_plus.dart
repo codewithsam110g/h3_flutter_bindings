@@ -1,4 +1,4 @@
-import 'package:h3_common_plus/h3_common.dart';
+import 'package:h3_common_plus/h3_common_plus.dart';
 import 'package:h3_web_plus/src/generated/types.dart' as h3_js;
 import 'package:h3_web_plus/src/mappers/big_int.dart';
 import 'package:h3_web_plus/src/mappers/units.dart';

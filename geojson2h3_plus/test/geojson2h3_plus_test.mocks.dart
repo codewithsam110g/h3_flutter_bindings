@@ -2,7 +2,7 @@
 // in geojson2h3/test/geojson2h3_test.dart.
 // Do not manually edit this file.
 
-import 'package:h3_common_plus/h3_common.dart' as _i2;
+import 'package:h3_common_plus/h3_common_plus.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
