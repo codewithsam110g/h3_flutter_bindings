@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:h3_flutter/h3_flutter.dart';
+import 'package:h3_flutter_plus/h3_flutter_plus.dart';
 
 void main() {
   runApp(const MyApp());

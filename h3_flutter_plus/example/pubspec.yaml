@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  h3_flutter:
+  h3_flutter_plus:
     path: ../
   cupertino_icons: ^1.0.2
 
