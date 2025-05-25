@@ -20,7 +20,7 @@ Future<void> resolveVersionFor(Package package) async {
   final version = getLibraryVersion(fileContent: pubspec);
   if (version == null) {
     exitCode = 1;
-    print('h3_dart: version unknown');
+    print('h3_dart_plus: version unknown');
     return;
   }
   print(version.trim());

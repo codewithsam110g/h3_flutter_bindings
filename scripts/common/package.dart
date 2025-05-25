@@ -1,10 +1,10 @@
 enum Package {
-  h3Common(name: 'h3_common'),
-  h3Ffi(name: 'h3_ffi'),
-  h3Web(name: 'h3_web'),
-  geojson2h3(name: 'geojson2h3'),
-  h3Dart(name: 'h3_dart'),
-  h3Flutter(name: 'h3_flutter');
+  h3CommonPlus(name: 'h3_common_plus'),
+  h3FfiPlus(name: 'h3_ffi_plus'),
+  h3WebPlus(name: 'h3_web_plus'),
+  geojson2h3Plus(name: 'geojson2h3_plus'),
+  h3DartPlus(name: 'h3_dart_plus'),
+  h3FlutterPlus(name: 'h3_flutter_plus');
 
   const Package({
     required this.name,
