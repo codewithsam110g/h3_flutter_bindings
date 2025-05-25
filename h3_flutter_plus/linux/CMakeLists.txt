@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Project-level configuration.
-set(PROJECT_NAME "h3_flutter")
+set(PROJECT_NAME "h3_flutter_plus")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 # Invoke the build for native code shared with the other target platforms.
@@ -14,7 +14,7 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/include/h3lib" "${CMAKE_CURRENT_BI
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
-set(h3_flutter_bundled_libraries
+set(h3_flutter_plus_bundled_libraries
   # Defined in ../include/h3lib/CMakeLists.txt.
   # This can be changed to accommodate different builds.
   $<TARGET_FILE:h3>
