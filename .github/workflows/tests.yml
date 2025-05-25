@@ -33,20 +33,20 @@ jobs:
 
       - name: Install dependencies
         run: dart pub get
-        working-directory: ./geojson2h3
+        working-directory: ./geojson2h3_plus
 
       - name: Analyze
         run: dart analyze
-        working-directory: ./geojson2h3
+        working-directory: ./geojson2h3_plus
 
       - name: Run tests
         run: dart pub global run coverage:test_with_coverage
-        working-directory: ./geojson2h3
+        working-directory: ./geojson2h3_plus
 
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v5
         with:
-          files: ./geojson2h3/coverage/lcov.info
+          files: ./geojson2h3_plus/coverage/lcov.info
           flags: geojson2h3
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -71,20 +71,20 @@ jobs:
 
       - name: Install dependencies
         run: dart pub get
-        working-directory: ./h3_common
+        working-directory: ./h3_common_plus
 
       - name: Analyze
         run: dart analyze
-        working-directory: ./h3_common
+        working-directory: ./h3_common_plus
 
       - name: Run tests
         run: dart pub global run coverage:test_with_coverage
-        working-directory: ./h3_common
+        working-directory: ./h3_common_plus
 
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v5
         with:
-          files: ./h3_common/coverage/lcov.info
+          files: ./h3_common_plus/coverage/lcov.info
           flags: h3_common
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -112,27 +112,27 @@ jobs:
 
       - name: Install dependencies
         run: dart pub get
-        working-directory: ./h3_dart
+        working-directory: ./h3_dart_plus
 
       - name: Analyze
         run: dart analyze
-        working-directory: ./h3_dart
+        working-directory: ./h3_dart_plus
 
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@latest
 
       - name: Run tests (VM)
         run: dart pub global run coverage:test_with_coverage
-        working-directory: ./h3_dart
+        working-directory: ./h3_dart_plus
 
       - name: Run tests (Web)
         run: dart test -p chrome
-        working-directory: ./h3_dart
+        working-directory: ./h3_dart_plus
 
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v5
         with:
-          files: ./h3_dart/coverage/lcov.info
+          files: ./h3_dart_plus/coverage/lcov.info
           flags: h3_dart
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -160,20 +160,20 @@ jobs:
 
       - name: Install dependencies
         run: dart pub get
-        working-directory: ./h3_ffi
+        working-directory: ./h3_ffi_plus
 
       - name: Analyze
         run: dart analyze
-        working-directory: ./h3_ffi
+        working-directory: ./h3_ffi_plus
 
       - name: Run tests
         run: dart pub global run coverage:test_with_coverage
-        working-directory: ./h3_ffi
+        working-directory: ./h3_ffi_plus
 
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v5
         with:
-          files: ./h3_ffi/coverage/lcov.info
+          files: ./h3_ffi_plus/coverage/lcov.info
           flags: h3_ffi
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -197,22 +197,22 @@ jobs:
       
       - name: Disable macOS
         run: flutter config --no-enable-macos-desktop
-        working-directory: ./h3_flutter
+        working-directory: ./h3_flutter_plus
       
       - name: Disable web
         run: flutter config --no-enable-web
-        working-directory: ./h3_flutter
+        working-directory: ./h3_flutter_plus
       
       - name: Override dependencies
         run: dart scripts/dependency_override.dart
       
       - name: Pub get
         run: flutter pub get
-        working-directory: ./h3_flutter
+        working-directory: ./h3_flutter_plus
       
       - name: Analyze
         run: flutter analyze
-        working-directory: ./h3_flutter
+        working-directory: ./h3_flutter_plus
       
       - name: Enable KVM group perms
         run: |
@@ -253,7 +253,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          working-directory: ./h3_flutter/example
+          working-directory: ./h3_flutter_plus/example
           script: flutter test integration_test/app_test.dart
   h3_flutter_test_desktop:
     runs-on: ${{ matrix.os }}
@@ -287,15 +287,15 @@ jobs:
 
     - name: Pub get
       run: "flutter pub get"
-      working-directory: ./h3_flutter
+      working-directory: ./h3_flutter_plus
 
     - name: Analyze
       run: "flutter analyze"
-      working-directory: ./h3_flutter
+      working-directory: ./h3_flutter_plus
 
     - name: Disable web
       run: flutter config --no-enable-web
-      working-directory: ./h3_flutter
+      working-directory: ./h3_flutter_plus
 
     - name: Run tests (linux)
       run: | 
@@ -339,19 +339,19 @@ jobs:
 
     - name: Pub get
       run: "flutter pub get"
-      working-directory: ./h3_flutter
+      working-directory: ./h3_flutter_plus
 
     - name: Analyze
       run: "flutter analyze"
-      working-directory: ./h3_flutter
+      working-directory: ./h3_flutter_plus
 
     - name: Disable linux
       run: flutter config --no-enable-linux-desktop
-      working-directory: ./h3_flutter
+      working-directory: ./h3_flutter_plus
 
     - name: Run tests
       run: flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_test.dart -d web-server
-      working-directory: ./h3_flutter/example
+      working-directory: ./h3_flutter_plus/example
 
   h3_web_tests:
     runs-on: ${{ matrix.os }}
@@ -371,12 +371,12 @@ jobs:
 
       - name: Install dependencies
         run: dart pub get
-        working-directory: ./h3_web
+        working-directory: ./h3_web_plus
 
       - name: Analyze
         run: dart analyze
-        working-directory: ./h3_web
+        working-directory: ./h3_web_plus
 
       - name: Run tests
         run: dart test -p chrome
-        working-directory: ./h3_web
+        working-directory: ./h3_web_plus
