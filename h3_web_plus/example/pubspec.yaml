@@ -8,7 +8,7 @@ environment:
 
 
 dependencies:
-  h3_web:
+  h3_web_plus:
     path: ..
 
 dev_dependencies:

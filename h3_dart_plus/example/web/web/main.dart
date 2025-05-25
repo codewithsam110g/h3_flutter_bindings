@@ -1,6 +1,6 @@
 import 'dart:html';
 
-import 'package:h3_dart/h3_dart.dart';
+import 'package:h3_dart_plus/h3_dart_plus.dart';
 
 void main() {
   const h3Factory = H3Factory();

@@ -257,20 +257,20 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
-  h3_common:
+  h3_common_plus:
     dependency: transitive
     description:
-      path: "../../h3_common"
+      path: "../../h3_common_plus"
       relative: true
     source: path
-    version: "0.6.1"
-  h3_web:
+    version: "1.0.0+v4.2.1"
+  h3_web_plus:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.6.1"
+    version: "1.0.0+v4.2.1"
   http:
     dependency: transitive
     description:
