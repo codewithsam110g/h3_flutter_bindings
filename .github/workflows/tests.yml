@@ -195,6 +195,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       
+      - name: Configure Gradle Memory Settings
+        run: |
+          mkdir -p ~/.gradle
+          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m -XX:+HeapDumpOnOutOfMemoryError" >> ~/.gradle/gradle.properties
+          echo "org.gradle.parallel=true" >> ~/.gradle/gradle.properties
+          echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties
+          echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+          echo "android.useAndroidX=true" >> ~/.gradle/gradle.properties
+          echo "android.enableJetifier=true" >> ~/.gradle/gradle.properties
+      
       - name: Disable macOS
         run: flutter config --no-enable-macos-desktop
         working-directory: ./h3_flutter_plus
@@ -243,6 +253,9 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."
+        env:
+          GRADLE_OPTS: -Xmx4096m -XX:MaxMetaspaceSize=1024m
+          _JAVA_OPTIONS: -Xmx4096m
       
       - name: Run tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -255,6 +268,10 @@ jobs:
           disable-animations: true
           working-directory: ./h3_flutter_plus/example
           script: flutter test integration_test/app_test.dart
+        env:
+          GRADLE_OPTS: -Xmx4096m -XX:MaxMetaspaceSize=1024m
+          _JAVA_OPTIONS: -Xmx4096m
+
   h3_flutter_test_desktop:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -316,7 +333,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v4  # Updated to v4
     
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
@@ -330,10 +347,11 @@ jobs:
         chrome-version: 136
         install-chromedriver: true
     
-    - name: Setup Display for Headless Chrome
+    - name: Setup Display and ChromeDriver
       run: |
         export DISPLAY=:99
         sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+        chromedriver --port=4444 --whitelisted-ips= > /dev/null 2>&1 &
         sleep 3
     
     - name: Override dependencies
@@ -360,6 +378,7 @@ jobs:
       working-directory: ./h3_flutter_plus/example
       env:
         DISPLAY: :99
+        CHROME_EXECUTABLE: google-chrome
 
   h3_web_tests:
     runs-on: ${{ matrix.os }}
