@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
-import 'package:h3_common/h3_common.dart';
-import 'package:h3_ffi/src/generated/generated_bindings.dart' as c;
+import 'package:h3_common_plus/h3_common.dart';
+import 'package:h3_ffi_plus/src/generated/generated_bindings.dart' as c;
 
 extension LatLngToNativeMapperExtension on LatLngRadians {
   /// Returns LatLng representation of LatLng class

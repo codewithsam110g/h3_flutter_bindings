@@ -1,7 +1,7 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
-import 'package:h3_common/h3_common.dart';
-import 'package:h3_ffi/src/mappers/big_int.dart';
+import 'package:h3_common_plus/h3_common.dart';
+import 'package:h3_ffi_plus/src/mappers/big_int.dart';
 
 import 'generated/generated_bindings.dart' as c;
 import 'mappers/native.dart';

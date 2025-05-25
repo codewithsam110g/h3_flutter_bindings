@@ -1,6 +1,6 @@
 import 'dart:ffi';
 
-import 'package:h3_ffi/src/generated/generated_bindings.dart';
+import 'package:h3_ffi_plus/src/generated/generated_bindings.dart';
 
 /// H3CFactory is used to build H3C instance
 class H3CFactory {

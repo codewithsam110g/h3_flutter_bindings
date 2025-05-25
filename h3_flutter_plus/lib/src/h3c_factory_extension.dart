@@ -1,4 +1,4 @@
-import 'package:h3_ffi/internal.dart';
+import 'package:h3_ffi_plus/internal.dart';
 
 import 'dynamic_library_resolver.dart';
 

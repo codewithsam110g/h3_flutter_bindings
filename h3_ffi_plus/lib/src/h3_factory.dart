@@ -1,8 +1,8 @@
 import 'dart:ffi';
 
-import 'package:h3_common/h3_common.dart';
-import 'package:h3_ffi/internal.dart';
-import 'package:h3_ffi/src/h3_ffi.dart';
+import 'package:h3_common_plus/h3_common.dart';
+import 'package:h3_ffi_plus/internal.dart';
+import 'package:h3_ffi_plus/src/h3_ffi.dart';
 import 'package:path/path.dart' as p;
 
 /// H3FfiFactory is used to build H3Ffo instance

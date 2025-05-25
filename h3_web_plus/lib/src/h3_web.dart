@@ -1,8 +1,8 @@
-import 'package:h3_common/h3_common.dart';
-import 'package:h3_web/src/generated/types.dart' as h3_js;
-import 'package:h3_web/src/mappers/big_int.dart';
-import 'package:h3_web/src/mappers/units.dart';
-import 'package:h3_web/src/mappers/js_error.dart';
+import 'package:h3_common_plus/h3_common.dart';
+import 'package:h3_web_plus/src/generated/types.dart' as h3_js;
+import 'package:h3_web_plus/src/mappers/big_int.dart';
+import 'package:h3_web_plus/src/mappers/units.dart';
+import 'package:h3_web_plus/src/mappers/js_error.dart';
 
 class H3Web implements H3 {
   const H3Web();

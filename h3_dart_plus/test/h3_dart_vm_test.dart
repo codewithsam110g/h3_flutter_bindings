@@ -4,8 +4,8 @@ library h3_dart.test.vm;
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:h3_dart/h3_dart.dart';
-import 'package:h3_ffi/h3_ffi.dart';
+import 'package:h3_dart_plus/h3_dart.dart';
+import 'package:h3_ffi_plus/h3_ffi.dart';
 
 void main() async {
   final h3Factory = const H3Factory();

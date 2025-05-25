@@ -1,5 +1,5 @@
-import 'package:geojson2h3/geojson2h3.dart';
-import 'package:h3_common/h3_common.dart';
+import 'package:geojson2h3_plus/geojson2h3.dart';
+import 'package:h3_common_plus/h3_common.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';

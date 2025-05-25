@@ -1,6 +1,6 @@
-name: h3_dart
+name: h3_dart_plus
 description: The package provides Dart version of the H3 Core library, a hexagon-based geographic grid system
-version: 0.6.2
+version: 1.0.0+v4.2.1
 homepage: https://github.com/festelo/h3_dart
 publish_to: none
 environment:
@@ -8,14 +8,14 @@ environment:
 
 dependencies:
   ffi: ^2.0.1
-  h3_ffi: 
-    path: "../h3_ffi"
-  h3_web:
-    path: "../h3_web"
-  h3_common:
-    path: "../h3_common"
-  geojson2h3:
-    path: "../geojson2h3"
+  h3_ffi_plus: 
+    path: "../h3_ffi_plus"
+  h3_web_plus:
+    path: "../h3_web_plus"
+  h3_common_plus:
+    path: "../h3_common_plus"
+  geojson2h3_plus:
+    path: "../geojson2h3_plus"
 
 dev_dependencies: 
   lints: ^2.0.0

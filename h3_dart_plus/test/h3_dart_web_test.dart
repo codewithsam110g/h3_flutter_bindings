@@ -1,9 +1,9 @@
 @TestOn('browser')
 library h3_web.test.web;
 
-import 'package:h3_web/h3_web.dart';
+import 'package:h3_web_plus/h3_web.dart';
 import 'package:test/test.dart';
-import 'package:h3_dart/h3_dart.dart';
+import 'package:h3_dart_plus/h3_dart.dart';
 
 import 'h3_js_injector.dart';
 

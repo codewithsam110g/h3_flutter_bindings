@@ -1,4 +1,4 @@
-import 'package:h3_common/h3_common.dart';
+import 'package:h3_common_plus/h3_common.dart';
 
 import 'h3_factory.base.dart';
 

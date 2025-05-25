@@ -1,4 +1,4 @@
-import 'package:h3_common/h3_common.dart';
+import 'package:h3_common_plus/h3_common.dart';
 
 /// H3Factory is used to build H3 instance
 abstract class BaseH3Factory {

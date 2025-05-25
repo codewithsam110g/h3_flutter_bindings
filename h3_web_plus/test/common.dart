@@ -1,4 +1,4 @@
-import 'package:h3_web/h3_web.dart';
+import 'package:h3_web_plus/h3_web.dart';
 
 const geoPrecision = 7;
 

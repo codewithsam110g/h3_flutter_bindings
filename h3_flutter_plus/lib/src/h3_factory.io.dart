@@ -1,4 +1,4 @@
-import 'package:h3_ffi/h3_ffi.dart';
+import 'package:h3_ffi_plus/h3_ffi.dart';
 
 import 'dynamic_library_resolver.dart';
 import 'h3_factory.base.dart';
