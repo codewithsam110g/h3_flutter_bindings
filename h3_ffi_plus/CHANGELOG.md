@@ -1,162 +1,227 @@
-## 0.6.2
-* Flutter for Windows support
-* Rename `libh3lib.lib` file to `h3.so`
+# Changelog
 
-## 0.6.1
-* Add holes support to `polyfill` function (thanks [@iulian0512](https://github.com/iulian0512))
-* Fix Android build for `h3_flutter` (thanks [@rtviwe](https://github.com/iulian0512))
-* Fix `CMakeLists.txt` and update build instruction for M1 mac
-* Update dependencies
+## [1.0.0+v4.2.1] - 26/05/2025 (d-m-y)
 
-## 0.6.0
-* Split `h3_dart` library into 5 libraries - `h3_dart`, `h3_ffi`, `h3_web`, `h3_common`, `geojson2h3`
-* Use `BigInt` instead of `int` for h3 indexes due to `web` specific.
-* Web support added to `h3_dart` and `h3_flutter`
+### Overview
 
-## 0.5.2
-* Update README.md and tests
+This release (`1.0.0+v4.2.1`) marks the first stable version of the new H3 bindings ecosystem for Dart and Flutter, targeting Uber's H3 C library v4.2.1. It replaces the old, unmaintained bindings (`h3_flutter`, `h3_dart`, and others by festelo), which were based on H3 v3.7.2. Legacy changelogs are preserved in `CHANGELOG.legacy.md`.
 
-## 0.5.1
-* Update README.md
+### New H3 Bindings Ecosystem
 
-## 0.5.0
-* Split `h3_flutter` library into 2 libraries - `h3_flutter` and `h3_dart` for pure-dart projects.
-* **[BREAKING]** remove `h3` and `geojson2H3` singletones.  
-  To access h3 you should use `H3Factory().load()` if you use `h3_flutter` and `H3Factory().byPath(...)` or `H3Factory().byDynamicLibary(...)` if you use `h3_dart`
-* Add `GeoCoordRadians` to allow to specify coordinates in radians.  
-  `GeoCoordRadians` must be converted to `GeoCoord` using `.toDegrees(converter)` method before you can use it in h3 or geojson2h3 methods.
-* Add option to convert `GeoCoord` to `GeoCoordRadians` via `.toRadians(converter)` method
-* Add AngleConverter and GeoCoordConverter classes to convert between radians and degrees.  
-  AngleConverter is abstract, but has two implementations - H3AngleConverter and NativeAngleConverter
-* Add tests on windows, linux, flutter stable and dev.
-* Add integration tests for `h3_flutter` built for macos
-* CI/CD improvements - more checks, automatic publishing
+This release introduces a complete ecosystem of H3 bindings consisting of 6 packages:
 
-## 0.4.2
-* Fix `CoordIJ.toString()` output
-* Change `CoordIJ.hashCode`to generate more unique hashcode
-* Fix `GeoCoord.toString()` output
-* Change `GeoCoord.hashCode`to generate more unique hashcode
-* Add world-wrapping feature to `GeoCoord()` constructor
-* `geojson2h3.h3ToFeature` and `geojson2h3.h3SetToFeatureCollection` now adds `'properties': {}` to output when properties not set. To make the behaviour closer to JS version of the library
-* Change type for `properties` parameter in `geojson2h3.h3SetToFeatureCollection` function. Now it accepts Function() instead of Map
-* Rename `h3_flutter_test.dart` to `h3_test.dart`
-* Add tests for following methods:
-```
-geojson2h3.h3ToFeature
-geojson2h3.h3SetToFeatureCollection
-CoordIJ.==
-CoordIJ.hashCode
-CoordIJ.toString
-GeoCoord.==
-GeoCoord.hashCode
-GeoCoord.toString
-GeoCoord() (World-Wrapping)
-H3Exception.toString
-```
+- **geojson2h3_plus** - GeoJSON to H3 conversion utilities
+- **h3_common_plus** - Common H3 interface and types
+- **h3_ffi_plus** - FFI implementation using Dart FFI with C for VM Dart
+- **h3_web_plus** - Web implementation using dart-js-ffigen for browser environments
+- **h3_dart_plus** - Pure Dart package for VM environments
+- **h3_flutter_plus** - Flutter ecosystem package
 
-## 0.4.1
-* Fix `h3.getH3UnidirectionalEdgesFromHexagon` method - now it returns 5 elements for pentagon.
-* Fix `h3.h3Line` method - now it throws `H3Exception` instead of some internal when input is not valid.
-* Update README.md.
-* Update documentation for methods `h3.h3ToParent`, `h3.h3ToCenterChild`, `h3.getH3UnidirectionalEdge`, `h3.getOriginH3IndexFromUnidirectionalEdge`, `h3.getDestinationH3IndexFromUnidirectionalEdge`, `h3.h3Distance`.
-* Add tests for following methods:
-```
-h3.h3IndexesAreNeighbors
-h3.getH3UnidirectionalEdge
-h3.getOriginH3IndexFromUnidirectionalEdge
-h3.getDestinationH3IndexFromUnidirectionalEdge
-h3.h3UnidirectionalEdgeIsValid
-h3.getH3UnidirectionalEdgesFromHexagon
-h3.getH3UnidirectionalEdgeBoundary
-h3.h3Distance
-h3.h3Line
-h3.experimentalH3ToLocalIj
-h3.experimentalLocalIjToH3
-h3.hexArea
-h3.edgeLength
-h3.cellArea
-h3.pointDist
-h3.numHexagons
-h3.getRes0Indexes
-h3.getPentagonIndexes
-```
+All packages replace their unmaintained counterparts (non-`_plus` versions by festelo) which were stuck at H3 v3.7.2 and are no longer maintained on pub.dev.
 
-## 0.4.0
-* **[BREAKING]** Change return types for `h3.h3IsPentagon` and h3IsResClassIII methods from [int] to [bool]
-* Fix broken `h3.h3GetFaces` method
-* Add `h3.h3ToParent` and `h3.h3ToChildren` methods
-* Add tests for following methods:
-```
-h3.h3IsPentagon
-h3.h3IsResClassIII
-h3.h3GetFaces
-h3.h3GetBaseCell
-h3.h3ToParent
-h3.h3ToChildren
-h3.h3ToCenterChild
-```
+### Architecture
 
-## 0.3.0
-* **[BREAKING]** resolution assert was added to `h3.polyfill` function.
-* `CoordIJ` class was added
-* `H3Exception` class was added
-* `H3Units`, `H3AreaUnits`, `H3EdgeLengthUnits` enums were added
-* Freeing allocated memory added
-* `h3.h3IsValid` was added
-* `h3.h3IsPentagon` was added
-* `h3.h3IsResClassIII` was added
-* `h3.h3GetBaseCell` was added
-* `h3.h3GetFaces` was added
-* `h3.h3GetResolution` was added
-* `h3.geoToH3` was added
-* `h3.h3ToGeo` was added
-* `h3.kRing` was added
-* `h3.hexRing` was added
-* `h3.compact` was added
-* `h3.uncompact` was added
-* `h3.h3IndexesAreNeighbors` was added
-* `h3.getH3UnidirectionalEdge` was added
-* `h3.getOriginH3IndexFromUnidirectionalEdge` was added
-* `h3.getDestinationH3IndexFromUnidirectionalEdge` was added
-* `h3.h3UnidirectionalEdgeIsValid` was added
-* `h3.getH3IndexesFromUnidirectionalEdge` was added
-* `h3.getH3UnidirectionalEdgesFromHexagon` was added
-* `h3.getH3UnidirectionalEdgeBoundary` was added
-* `h3.h3Distance` was added
-* `h3.h3Line` was added
-* `h3.experimentalH3ToLocalIj` was added
-* `h3.experimentalLocalIjToH3` was added
-* `h3.pointDist` was added
-* `h3.cellArea` was added
-* `h3.exactEdgeLength` was added
-* `h3.hexArea` was added
-* `h3.edgeLength` was added
-* `h3.numHexagons` was added
-* `h3.getRes0Indexes` was added
-* `h3.getPentagonIndexes` was added
+The abstract class `h3_common_plus` is implemented by:
 
+- **FFI implementation**: Uses Dart FFI with C for VM Dart environments
+- **Web implementation**: Uses dart-js-ffigen for web environments
 
-## 0.2.1
+Both implementations are updated to H3 v4.2.1. The `h3_dart_plus` (pure Dart) and `h3_flutter_plus` (Flutter ecosystem) packages use these implementations internally to provide the public API across multiple platforms.
 
-* Fix build errors
+### New APIs Introduced
 
-## 0.2.0
+#### Core Functional Extensions
 
-* macOS system support was added
-* Tests were added
-* Documentation was added
-* `h3.maxPolyfillSize` was removed
-## 0.1.0
+- **`describeH3Error`** - Provides human-readable error messages from H3Error codes [0-15]
+- **`polygonToCellsExperimental`** - New algorithmic variant of polygonToCells with support for center-based, fully-contained, and overlapping containment modes via flags parameter
+- **`cellToChildPos`** - Provides the position of a child cell within an ordered list of all children of the cell's parent at the specified resolution
+- **`childPosToCell`** - Reconstructs the child H3 index from a parent and a positional offset using resolution and child position index
 
-* `h3.maxPolyfillSize` was added
-* `h3.polyfill` was added
-* `h3.h3ToGeoBoundary` was added
-* `h3.radsToDegs` was added
-* `h3.degsToRads` was added
-* `geojson2h3.h3ToFeature` was added
-* `geojson2h3.h3SetToFeatureCollection` was added
+#### Vertex Mode APIs (New in H3 v4)
 
-## 0.1.0
+- **`cellToVertex`** - Returns the index for a specified cell vertex (vertex numbers 0-5 for hexagons, 0-4 for pentagons)
+- **`cellToVertexes`** - Returns the indexes for all vertexes of a given cell
+- **`vertexToLatLng`** - Returns the latitude and longitude coordinates of a given vertex
+- **`isValidVertex`** - Determines if a given H3 index represents a valid H3 vertex
 
-* First version
+### Updated APIs (H3 v3 → v4 Migration)
+
+Function names have been updated to reflect the new naming conventions in H3 v4. The major change is removing output parameters from return values and adding them as pointer parameters, with functions now returning status codes (success/failure/specific errors).
+
+#### Validation Functions
+
+| v3 Name                       | v4 Name               | Notes                                                       |
+| ----------------------------- | --------------------- | ----------------------------------------------------------- |
+| `h3IsValid`                   | `isValidCell`         | Determines if H3Index is a valid cell (hexagon or pentagon) |
+| `h3UnidirectionalEdgeIsValid` | `isValidDirectedEdge` | Validates directed edge indexes                             |
+| `h3IsPentagon`                | `isPentagon`          | Determines if H3Index is a valid pentagon                   |
+| `h3IsResClassIII`             | `isResClassIII`       | Checks if Resolution is Class III (rotated ~19.1°)          |
+
+#### Hierarchy Functions
+
+| v3 Name           | v4 Name             | Notes                                            |
+| ----------------- | ------------------- | ------------------------------------------------ |
+| `h3ToParent`      | `cellToParent`      | Get parent cell at specified resolution          |
+| `h3ToChildren`    | `cellToChildren`    | Get children/descendants at specified resolution |
+| `h3ToCenterChild` | `cellToCenterChild` | Get center child at specified resolution         |
+
+#### Geometry Functions
+
+| v3 Name           | v4 Name          | Notes                                                          |
+| ----------------- | ---------------- | -------------------------------------------------------------- |
+| `geoToH3`         | `latLngToCell`   | Find cell based on lat/lng coordinates at specified resolution |
+| `h3ToGeo`         | `cellToLatLng`   | Get coordinates based on center of given cell                  |
+| `h3ToGeoBoundary` | `cellToBoundary` | Get cell boundary in lat/lng coordinates                       |
+
+#### Polygon Functions
+
+| v3 Name               | v4 Name                     | Notes                                   |
+| --------------------- | --------------------------- | --------------------------------------- |
+| `polyfill`            | `polygonToCells`            | Convert polygon coordinates to H3 cells |
+| `h3SetToLinkedGeo`    | `cellsToLinkedMultiPolygon` | Returns LinkedGeoPolygon                |
+| `h3SetToMultiPolygon` | `cellsToMultiPolygon`       | Bindings only implementation            |
+
+#### Set Operations
+
+| v3 Name     | v4 Name          | Notes                                                   |
+| ----------- | ---------------- | ------------------------------------------------------- |
+| `compact`   | `compactCells`   | Compact cells of same resolution across multiple levels |
+| `uncompact` | `uncompactCells` | Uncompact compacted set to same resolution              |
+
+#### Neighbor and Distance Functions
+
+| v3 Name                 | v4 Name            | Notes                                          |
+| ----------------------- | ------------------ | ---------------------------------------------- |
+| `h3IndexesAreNeighbors` | `areNeighborCells` | Determines if provided H3 cells are neighbors  |
+| `h3Distance`            | `gridDistance`     | Grid distance between two cells (minimum hops) |
+| `h3Line`                | `gridPathCells`    | Line of indexes between two cells (inclusive)  |
+
+#### Ring and Disk Functions
+
+| v3 Name          | v4 Name             | Notes                                                   |
+| ---------------- | ------------------- | ------------------------------------------------------- |
+| `hexRing`        | `gridRingUnsafe`    | Hollow ring of cells at grid distance k                 |
+| `kRing`          | `gridDisk`          | Filled-in disk of cells at most grid distance k         |
+| `kRingDistances` | `gridDiskDistances` | Calls gridDiskDistancesUnsafe and gridDiskDistancesSafe |
+| `hexRange`       | `gridDiskUnsafe`    | Calls hexRangeDistances (now gridDiskDistancesUnsafe)   |
+| `hexRanges`      | `gridDisksUnsafe`   | N × gridDiskUnsafe                                      |
+
+#### Local IJ Coordinate Functions
+
+| v3 Name                   | v4 Name         | Notes                                                  |
+| ------------------------- | --------------- | ------------------------------------------------------ |
+| `experimentalLocalIjToH3` | `localIjToCell` | Produces H3 cell for IJ coordinates anchored by origin |
+| `experimentalH3ToLocalIj` | `cellToLocalIj` | Produces IJ coordinates for H3 cell anchored by origin |
+
+#### Directed Edge Functions (Concept: UnidirectionalEdge → DirectedEdge)
+
+| v3 Name                                       | v4 Name                      | Notes                                                       |
+| --------------------------------------------- | ---------------------------- | ----------------------------------------------------------- |
+| `getH3UnidirectionalEdge`                     | `cellsToDirectedEdge`        | Provides directed edge H3 index from origin and destination |
+| `getH3IndexesFromUnidirectionalEdge`          | `directedEdgeToCells`        | Get [origin, destination] pair from directed edge           |
+| `getOriginH3IndexFromUnidirectionalEdge`      | `getDirectedEdgeOrigin`      | Provides origin hexagon from directed edge                  |
+| `getDestinationH3IndexFromUnidirectionalEdge` | `getDirectedEdgeDestination` | Provides destination hexagon from directed edge             |
+| `getH3UnidirectionalEdgesFromHexagon`         | `originToDirectedEdges`      | Provides all directed edges from current cell               |
+| `getH3UnidirectionalEdgeBoundary`             | `directedEdgeToBoundary`     | Returns CellBoundary                                        |
+
+#### Area and Length Functions
+
+| v3 Name               | v4 Name                     | Notes                                           |
+| --------------------- | --------------------------- | ----------------------------------------------- |
+| `hexAreaKm2`          | `getHexagonAreaAvgKm2`      | Average hexagon area at resolution in km²       |
+| `hexAreaM2`           | `getHexagonAreaAvgM2`       | Average hexagon area at resolution in m²        |
+| `edgeLengthKm`        | `getHexagonEdgeLengthAvgKm` | Average hexagon edge length at resolution in km |
+| `edgeLengthM`         | `getHexagonEdgeLengthAvgM`  | Average hexagon edge length at resolution in m  |
+| `pointDistKm`         | `greatCircleDistanceKm`     | Great circle/haversine distance in km           |
+| `pointDistM`          | `greatCircleDistanceM`      | Great circle/haversine distance in m            |
+| `pointDistRads`       | `greatCircleDistanceRads`   | Great circle/haversine distance in radians      |
+| `exactEdgeLengthRads` | `edgeLengthRads`            | Exact length of directed edge in radians        |
+| `exactEdgeLengthKm`   | `edgeLengthKm`              | Exact length of directed edge in km             |
+| `exactEdgeLengthM`    | `edgeLengthM`               | Exact length of directed edge in m              |
+
+#### Utility Functions
+
+| v3 Name              | v4 Name               | Notes                                                  |
+| -------------------- | --------------------- | ------------------------------------------------------ |
+| `numHexagons`        | `getNumCells`         | Total count of hexagons at given resolution            |
+| `getRes0Indexes`     | `getRes0Cells`        | All H3 indexes at resolution 0                         |
+| `getPentagonIndexes` | `getPentagons`        | Twelve pentagon indexes at given resolution            |
+| `h3GetBaseCell`      | `getBaseCellNumber`   | Base cell number (0-121) of provided H3 cell           |
+| `h3GetResolution`    | `getResolution`       | Resolution of index (works for cells, edges, vertexes) |
+| `h3GetFaces`         | `getIcosahedronFaces` | All icosahedron faces intersected by H3 index          |
+
+### Internal Functions (Not Exposed in Public API)
+
+The following functions are used internally for memory management and optimization but are not exposed in the public API:
+
+- `maxGridDiskSize` - Memory allocation helper for gridDisk operations
+- `gridDiskUnsafe` - Internal unsafe disk implementation
+- `gridDiskDistancesUnsafe` - Internal unsafe disk with distances
+- `gridDiskDistancesSafe` - Internal safe disk with distances
+- `maxPolygonToCellsSize` - Memory allocation helper for polygon operations
+- `cellToChildrenSize` - Memory allocation helper for cellToChildren
+- `uncompactCellsSize` - Memory allocation helper for uncompactCells
+- `maxFaceCount` - Memory allocation helper for face operations
+- `gridPathCellsSize` - Memory allocation helper for gridPathCells
+- `res0CellCount` - Internal constant (122)
+- `pentagonCount` - Internal constant (12)
+- `destroyLinkedMultiPolygon` - Internal memory cleanup
+
+### Deprecated / Removed Functions
+
+The following functions were mentioned in migration guides or legacy code but are not implemented in H3 v4:
+
+- `isValidIndex` - Not in C code, only in migration guide
+- `cellToLoop` - Does not exist in v4
+- `loopToBoundary` - Does not exist in v4
+- `boundaryToLoop` - Does not exist in v4
+- `gridDiskSafe` - Replaced by `gridDisk`
+- `gridRingSafe` - Internal, not API - use `gridRingUnsafe`
+- `destinationToDirectedEdges` - Does not exist in v4
+- `gridPathEdges` - Does not exist in v4
+- `getMode` - Does not exist in v4
+- `gridPathDirectedEdges` - Does not exist in v4
+- `getPentagonAreaAvg` - Future implementation
+- `getPentagonEdgeLengthAvg` - Future implementation
+
+### Technical Changes
+
+#### C API Integration
+
+All functions now follow the H3 v4.2.1 C API pattern where:
+
+- Output parameters are passed as pointers
+- Functions return `H3Error` status codes instead of direct values
+- Error handling is more robust with specific error codes [0-15]
+
+#### Multi-Platform Support
+
+- **VM Dart**: Uses FFI implementation with direct C library binding
+- **Web**: Uses dart-js-ffigen for JavaScript interop
+- **Flutter**: Unified API across all supported platforms
+
+#### String Conversion
+
+- `h3ToString` - Converts H3Index to string representation
+- `stringToH3` - Converts string representation to H3Index
+
+#### Unit Conversion Utilities
+
+- `radsToDegs` - Converts radians to degrees
+- `degsToRads` - Converts degrees to radians
+
+### Breaking Changes
+
+This is a complete rewrite targeting H3 v4.2.1, so all existing code using the old festelo packages will need to be migrated. Key migration points:
+
+1. **Package Names**: Update all imports from `h3_*` to `h3_*_plus`
+2. **Function Names**: Update all function calls according to the v3→v4 mapping table above
+3. **Return Values**: Handle new error-based return pattern instead of direct value returns
+4. **Edge Terminology**: Update "UnidirectionalEdge" to "DirectedEdge" throughout codebase
+5. **New Vertex APIs**: Leverage new vertex mode functions for advanced geometric operations
+
+### Dependencies
+
+- Targets H3 C library v4.2.1
+- Compatible with Dart SDK constraints as specified in pubspec.yaml
+- Flutter compatibility maintained across all supported platforms

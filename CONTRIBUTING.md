@@ -84,9 +84,10 @@ cmake ..
 4. Build the C library using:
 
 ```bash
-cd h3_ffi_plus
-./scripts/build_h3.sh
+sh scripts/build_h3.sh
 ```
+
+Note: All scripts inside scripts/ must be run from the project root.
 
 Or use the CMake file directly.
 
@@ -96,7 +97,11 @@ Or use the CMake file directly.
 
 ### 1. Update `ffigen.yaml`
 
-Add all public API functions and required internals (e.g. `maxPolygonToCellsSize`).
+Edit `ffigen.yaml` to include all public H3 C functions you intend to expose.
+This includes core API functions and any required internal utilities like `maxPolygonToCellsSize`.
+
+Make sure the `include`, `exclude`, and `headers` fields in `ffigen.yaml` are accurate and reflect the updated C source files and official documentation from [uber/h3](https://h3geo.org/docs/).
+
 
 ### 2. Generate Bindings:
 
