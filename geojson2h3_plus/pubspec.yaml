@@ -1,15 +1,13 @@
 name: geojson2h3_plus
-description: The geojson2h3 library includes a set of utilities for conversion between GeoJSON polygons and H3 hexagon indexes, using h3. Inspired by JS library geojson2h3.
+description: The geojson2h3_plus library includes a set of utilities for conversion between GeoJSON polygons and H3 hexagon indexes, using h3. Inspired by JS library geojson2h3.
 version: 1.0.0+v4.2.1
-homepage: https://github.com/festelo/h3_dart
-publish_to: none
+homepage: https://github.com/codewithsam110g/h3_flutter_bindings
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=2.17.0 <4.0.0"
 
 dependencies:
-  h3_common_plus:
-    path: "../h3_common_plus"
+  h3_common_plus: ^1.0.0
 
 dev_dependencies:
   test: ^1.22.2
