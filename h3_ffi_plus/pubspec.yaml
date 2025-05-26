@@ -1,17 +1,15 @@
 name: h3_ffi_plus
-description: The package provides Dart version of the H3 Core library, a hexagon-based geographic grid system
+description: Dart FFI implementation of the abstract H3 interface from h3_common_plus. Not intended for direct use.
 version: 1.0.0+v4.2.1
-homepage: https://github.com/festelo/h3_dart
-publish_to: none
+homepage: https://github.com/codewithsam110g/h3_flutter_bindings
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=2.17.0 <4.0.0"
 
 dependencies:
   ffi: ^2.0.1
   path: ^1.8.1
-  h3_common_plus: 
-    path: "../h3_common_plus"
+  h3_common_plus: ^1.0.0
 
 dev_dependencies:
   test: ^1.22.2
